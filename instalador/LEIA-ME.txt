@@ -1,0 +1,70 @@
+GoW III Costumes - visuais para God of War III Remastered
+==========================================================
+
+[Português]
+
+Visuais incluídos
+  * Odisseia Sombria - pele cinza-carvão, olhos brancos e tatuagem dourada (inspirado no
+    GoW Ragnarok), armadura em preto e dourado (inspirado no GoW II) e Lâminas do Exílio
+    douradas com cabo preto. Obs.: as lâminas são as mesmas para todos os trajes
+    (arquivos R_W_EXPLOSIVE0..5.WAD).
+
+Requisitos
+  * Sua própria cópia do jogo (CUSA01623 ou CUSA01715). Este pacote NÃO contém arquivos
+    do jogo: o instalador lê os WADs originais do seu jogo e aplica apenas as texturas novas.
+
+SpartanPort (PC)
+  1. Extraia este zip em qualquer pasta.
+  2. Dê duplo clique em "Instalar.bat".
+  3. Escolha [1] Instalar visual. O instalador encontra o SpartanPort e a pasta do jogo
+     (pelo settings.json do SpartanPort) ou pede para você selecioná-las.
+  4. Escolha o slot:
+       R_HERO00 = Kratos padrão (o visual aparece sempre)
+       R_HERO01..R_HERO08 = um dos trajes extras do menu de trajes
+  5. Abra o SpartanPort, aba Mods, e confira se "GoW3 Costumes - ..." está ativado.
+
+  Remover: rode "Instalar.bat" e escolha [2] Remover visual, ou só desative o mod
+  na aba Mods do launcher. O jogo original nunca é alterado.
+
+PS4 (GoldHEN)
+  1. Rode "Instalar.bat" e escolha [3] Gerar arquivos para PS4.
+  2. Será criada a pasta "PS4 - <visual>/EXEC/WAD/PS4_LE/" com os arquivos do visual.
+  3. Copie a pasta EXEC para o PS4 usando um redirecionador de arquivos, por exemplo o
+     plugin AFR do GoldHEN: /data/GoldHEN/AFR/<ID do jogo>/EXEC/WAD/PS4_LE/
+  Para remover, apague os arquivos copiados.
+
+Idioma
+  O instalador e os nomes dos visuais aparecem em português quando o sistema está em
+  português; em outros idiomas, aparecem em inglês.
+
+
+[English]
+
+Included costumes
+  * Dark Odyssey - charcoal skin, white eyes and golden tattoo (inspired by GoW Ragnarok),
+    black and gold armor (inspired by GoW II) and golden Blades of Exile with black hilts.
+    Note: the blades are shared by all costumes (files R_W_EXPLOSIVE0..5.WAD).
+
+Requirements
+  * Your own copy of the game (CUSA01623 or CUSA01715). This package contains NO game
+    files: the installer reads the original WADs from your game and applies only the new textures.
+
+SpartanPort (PC)
+  1. Extract this zip anywhere.
+  2. Double-click "Instalar.bat".
+  3. Choose [1] Install costume. The installer finds SpartanPort and the game folder
+     (from SpartanPort's settings.json) or asks you to select them.
+  4. Choose the slot:
+       R_HERO00 = default Kratos (costume always shown)
+       R_HERO01..R_HERO08 = one of the bonus costumes in the costume menu
+  5. Open SpartanPort, Mods tab, and make sure "GoW3 Costumes - ..." is enabled.
+
+  Remove: run "Instalar.bat" and choose [2] Remove costume, or just disable the mod in
+  the launcher's Mods tab. The original game is never modified.
+
+PS4 (GoldHEN)
+  1. Run "Instalar.bat" and choose [3] Build files for PS4.
+  2. A folder "PS4 - <costume>/EXEC/WAD/PS4_LE/" is created with the costume files.
+  3. Copy the EXEC folder to the PS4 with a file redirector, e.g. the GoldHEN AFR plugin:
+     /data/GoldHEN/AFR/<game ID>/EXEC/WAD/PS4_LE/
+  To remove, delete the copied files.

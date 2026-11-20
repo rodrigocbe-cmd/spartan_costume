@@ -1,0 +1,8 @@
+# Arquivos grandes do jogo / gerados
+*.WAD
+*.wad
+original/
+build/
+costumes/*/texturas/
+costumes/*/preview/
+__pycache__/

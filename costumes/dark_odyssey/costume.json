@@ -1,0 +1,50 @@
+{
+ "id": "dark_odyssey",
+ "nomes": {
+  "pt": "Odisseia Sombria",
+  "en": "Dark Odyssey"
+ },
+ "descricao": {
+  "pt": "Kratos com pele cinza-carvão, olhos brancos e tatuagem dourada (inspirado no GoW Ragnarok), armadura em preto e dourado (inspirado no GoW II) e Lâminas do Exílio douradas com cabo preto.",
+  "en": "Kratos with charcoal skin, white eyes and a golden tattoo (inspired by GoW Ragnarok), black and gold armor (inspired by GoW II) and golden Blades of Exile with black hilts."
+ },
+ "autor": "GoW III Costumes",
+ "slot_padrao": "R_HERO00",
+ "wads": [
+  {
+   "base": "R_HERO00.WAD",
+   "texturas": "R_HERO00",
+   "destino": "slot"
+  },
+  {
+   "base": "R_W_EXPLOSIVE0.WAD",
+   "texturas": "R_W_EXPLOSIVE0",
+   "destino": "R_W_EXPLOSIVE0.WAD"
+  },
+  {
+   "base": "R_W_EXPLOSIVE1.WAD",
+   "texturas": "R_W_EXPLOSIVE0",
+   "destino": "R_W_EXPLOSIVE1.WAD"
+  },
+  {
+   "base": "R_W_EXPLOSIVE2.WAD",
+   "texturas": "R_W_EXPLOSIVE0",
+   "destino": "R_W_EXPLOSIVE2.WAD"
+  },
+  {
+   "base": "R_W_EXPLOSIVE3.WAD",
+   "texturas": "R_W_EXPLOSIVE0",
+   "destino": "R_W_EXPLOSIVE3.WAD"
+  },
+  {
+   "base": "R_W_EXPLOSIVE4.WAD",
+   "texturas": "R_W_EXPLOSIVE0",
+   "destino": "R_W_EXPLOSIVE4.WAD"
+  },
+  {
+   "base": "R_W_EXPLOSIVE5.WAD",
+   "texturas": "R_W_EXPLOSIVE5",
+   "destino": "R_W_EXPLOSIVE5.WAD"
+  }
+ ]
+}
