@@ -8,13 +8,13 @@ import os, sys, struct
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image
 import dds
-from extrair_texturas import textures
+from extrair_texturas import textures, nome_base
 
 def rebuild(src_wad, png_dir, out_wad, verbose=True):
     data = bytearray(open(src_wad, 'rb').read())
     n = 0
     for e, off, w, h, mips, fmt, body in textures(bytes(data)):
-        p = os.path.join(png_dir, e['name'][:-4] + '.png')
+        p = os.path.join(png_dir, nome_base(e['name']) + '.png')
         if not os.path.exists(p):
             continue
         img = Image.open(p)

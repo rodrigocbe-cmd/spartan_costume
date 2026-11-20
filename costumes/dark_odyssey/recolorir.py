@@ -49,12 +49,16 @@ CABO = [(0.34, 0.21), (0.39, 0.17), (0.40, 0.06), (0.42, 0.0), (0.50, 0.0), (0.5
         (0.34, 0.43), (0.33, 0.31)]
 
 
-def mascara_olho(shape):
-    """Disco do globo ocular na UV do corpo: centro (0.82, 0.30), raio 0.145 da largura."""
+def mascara_olho_raio(shape, raio):
     H, W = shape[:2]
     yy, xx = np.mgrid[0:H, 0:W]
     r = np.hypot(xx - 0.82 * W, yy - 0.30 * H)
-    return 1 - suave(r, 0.135 * W, 0.145 * W)
+    return 1 - suave(r, (raio - 0.01) * W, raio * W)
+
+
+def mascara_olho(shape):
+    """Disco do globo ocular na UV do corpo: centro (0.82, 0.30), raio 0.145 da largura."""
+    return mascara_olho_raio(shape, 0.145)
 
 
 def carregar(nome, wad='R_HERO00'):
@@ -147,13 +151,15 @@ def mascara_tatuagem(rgb, ex, area_min_frac):
     return np.clip(m, 0, 1)
 
 
-def pele_e_tatuagem(nome, excluir, pano=(), sem_tatuagem=()):
+def pele_e_tatuagem(nome, excluir, pano=(), sem_tatuagem=(), ex_mascara=None):
     """excluir: caixas cujo conteúdo não-pele é preservado (olho, dentes, boca interna).
     pano: caixas onde vermelho saturado é pano (vira preto, não tatuagem)."""
     rgb, a = carregar(nome)
     h, s, v = hsv(rgb)
     L = lum(rgb)
     ex = caixa(rgb.shape, excluir)
+    if ex_mascara is not None:
+        ex = np.maximum(ex, ex_mascara(rgb.shape))
     pn = caixa(rgb.shape, pano)
     st = caixa(rgb.shape, sem_tatuagem)   # ex.: cicatriz que encosta na tatuagem
     tat = mascara_tatuagem(rgb, np.maximum(np.maximum(ex, pn), st), 0.0015)
@@ -181,11 +187,12 @@ def main():
     rosto_pano = [(0.0, 0.56, 0.30, 1.0)]   # pano vermelho
     out, a, tat = pele_e_tatuagem(TEX_ROSTO, rosto_ex, rosto_pano)
     salvar(TEX_ROSTO, out, a)
-    corpo_ex = [(0.64, 0.0, 1.0, 0.18),     # dentes e gengiva
-                (0.66, 0.22, 1.0, 0.40)]    # globo ocular
+    corpo_ex = [(0.64, 0.0, 1.0, 0.18)]     # dentes e gengiva
+    # globo ocular: disco (uma caixa cortava a ponta de uma faixa da tatuagem das costas)
+    olho_ex = lambda shape: (mascara_olho_raio(shape, 0.155) > 0.5).astype(np.float32)
     corpo_cicatriz = [(0.46, 0.575, 0.555, 0.67),    # cicatriz da barriga
                       (0.555, 0.605, 0.58, 0.635)]  # ponte entre cicatriz e tatuagem
-    out2, a2, _ = pele_e_tatuagem(TEX_CORPO, corpo_ex, sem_tatuagem=corpo_cicatriz)
+    out2, a2, _ = pele_e_tatuagem(TEX_CORPO, corpo_ex, sem_tatuagem=corpo_cicatriz, ex_mascara=olho_ex)
     # Olhos todo brancos, sem íris/pupila (Ragnarok; no GoW II o olho também é branco).
     # O globo ocular é um disco na UV (centro 0.82, 0.30). Ele é desenhado em 3 texturas:
     # cor do corpo (innereye_m), cor azulada (outereye_m) e mapa de normal (relevo da íris).
@@ -312,6 +319,39 @@ def main():
     verm = ((h < 0.06) | (h > 0.94)) * suave(s, 0.3, 0.6)
     fogo = np.array([1.0, 0.62, 0.15]) * v[..., None]
     salvar(TEX_EXILIO_BRILHO, grgb * (1 - verm[..., None]) + fogo * verm[..., None], gal, WAD_EXILIO)
+
+    # Fogo das lâminas (sprites de chamas, explosão e brilho): laranja/vermelho -> dourado.
+    # A cor final também depende das partículas (pos_wad.py dourar as curvas de cor).
+    FOGO = ['TX22A00174.86E9522E', 'TXD8C83914.4E3556ED', 'TX9E182643.C614316E',
+            'TXA94E26B8.7EDB86A6', 'TXBD708C9C.7BE1F2C9']
+    for i in range(6):
+        w = 'R_W_EXPLOSIVE%d' % i
+        for t in FOGO:
+            if not os.path.exists(os.path.join(ORIG, w, 'png', t + '.png')):
+                continue
+            frgb, fal = carregar(t, w)
+            h, s, v = hsv(frgb)
+            quente = (((h < 0.17) | (h > 0.93)) * suave(s, 0.15, 0.35))[..., None]
+            base = np.array([1.0, 0.72, 0.25])
+            claro = np.array([1.0, 0.93, 0.68])
+            cor = (base * s[..., None] + claro * (1 - s[..., None])) * v[..., None]
+            salvar(t, frgb * (1 - quente) + cor * quente, fal, w)
+
+    # Rastros dos golpes das lâminas (TXR_swordtrail, um por WAD/nível): vermelho -> dourado.
+    # Partes saturadas viram dourado âmbar; partes claras, dourado pálido. Mantém alfa e brilho.
+    for i in range(6):
+        w = 'R_W_EXPLOSIVE%d' % i
+        trgb, tal = carregar('TXR_swordtrail', w)
+        h, s, v = hsv(trgb)
+        base = np.array([1.0, 0.70, 0.22])
+        claro = np.array([1.0, 0.93, 0.68])
+        cor = base * s[..., None] + claro * (1 - s[..., None])
+        salvar('TXR_swordtrail', cor * v[..., None], tal, w)
+    # a textura da Lâmina de Atena é a mesma em EXPLOSIVE0..4
+    lam = Image.open(os.path.join(SAIDA, WAD_LAMINAS, TEX_LAMINA + '.png'))
+    for i in range(1, 5):
+        os.makedirs(os.path.join(SAIDA, 'R_W_EXPLOSIVE%d' % i), exist_ok=True)
+        lam.save(os.path.join(SAIDA, 'R_W_EXPLOSIVE%d' % i, TEX_LAMINA + '.png'))
 
     # Previews lado a lado (original | novo)
     os.makedirs(PREV, exist_ok=True)

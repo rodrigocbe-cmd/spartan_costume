@@ -13,14 +13,43 @@ import hashlib, json, os, shutil, sys, zipfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from reempacotar import rebuild
 from extrair_texturas import textures
+import importlib.util
+import wad as wadmod
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-VERSAO = '0.3.0'
+VERSAO = '0.4.0'
 PASTA_DIST = 'GoW3 Costumes'
 
 
 def sha(b):
     return hashlib.sha256(b).hexdigest()
+
+
+def trechos(orig, novo, ddir):
+    """Entradas cujos dados mudaram → trechos (nome, ocorrência, deslocamento, tamanho).
+    Texturas: só os pixels (depois do cabeçalho DDS). Outras entradas: os dados inteiros."""
+    out = []
+    vistos = {}
+    eo = wadmod.parse(orig)
+    for e in eo:
+        k = (e['name'], e['tag'])
+        oc = vistos.get(k, 0); vistos[k] = oc + 1
+        a = orig[e['data_off']:e['data_off'] + e['size']]
+        b = novo[e['data_off']:e['data_off'] + e['size']]
+        if a == b:
+            continue
+        ini = 0
+        dds = a.find(b'DDS ', 0, 0x200) if e['tag'] == 0xd0001 else -1
+        if dds >= 0:
+            ini = dds + 128
+        pa, pb = a[ini:], b[ini:]
+        h = sha(pb)
+        arq = h[:16] + '.bin'
+        if not os.path.exists(os.path.join(ddir, arq)):
+            open(os.path.join(ddir, arq), 'wb').write(pb)
+        out.append(dict(nome=e['name'], tag=e['tag'], ocorrencia=oc, desloc=ini, tamanho=len(pb),
+                        arquivo=arq, sha256_original=sha(pa), sha256_novo=h))
+    return out
 
 
 def main(cid):
@@ -33,29 +62,26 @@ def main(cid):
     ddir = os.path.join(dist, 'dados', cid)
     os.makedirs(ddir)
 
+    pos = None
+    hook = os.path.join(cdir, 'pos_wad.py')
+    if os.path.exists(hook):
+        spec = importlib.util.spec_from_file_location('pos_wad', hook)
+        pos = importlib.util.module_from_spec(spec); spec.loader.exec_module(pos)
     wads = []
     for w in meta['wads']:
         base = os.path.join(RAIZ, 'original', 'wad', w['base'])
         assert os.path.exists(base), f'copie {w["base"]} do jogo para original/wad/'
         wad_out = os.path.join(RAIZ, 'build', cid, w['base'])
         print('Reempacotando', w['base'])
-        n = rebuild(base, os.path.join(cdir, 'texturas', w['texturas']), wad_out, verbose=False)
+        rebuild(base, os.path.join(cdir, 'texturas', w['texturas']), wad_out, verbose=False)
+        if pos is not None:
+            dados = pos.processar(w['base'][:-4], open(wad_out, 'rb').read())
+            open(wad_out, 'wb').write(dados)
         orig, novo = open(base, 'rb').read(), open(wad_out, 'rb').read()
-        assert len(orig) == len(novo) and n > 0
-        tex = []
-        for (e, off, *_r, body), (_e2, _o2, *_r2, body2) in zip(textures(orig), textures(novo)):
-            if body == body2:
-                continue
-            ini = off + 128
-            pix_o, pix_n = body[ini:], body2[ini:]
-            h = sha(pix_n)
-            arq = h[:16] + '.bin'
-            if not os.path.exists(os.path.join(ddir, arq)):
-                open(os.path.join(ddir, arq), 'wb').write(pix_n)
-            tex.append(dict(nome=e['name'], arquivo=arq, tamanho=len(pix_n),
-                            sha256_original=sha(pix_o), sha256_novo=h))
-        print(f'  {len(tex)} texturas alteradas')
-        wads.append(dict(base=w['base'], destino=w['destino'], sha256_resultado=sha(novo), texturas=tex))
+        assert len(orig) == len(novo)
+        tex = trechos(orig, novo, ddir)
+        print(f'  {len(tex)} trechos alterados')
+        wads.append(dict(base=w['base'], destino=w['destino'], sha256_resultado=sha(novo), trechos=tex))
 
     manifest = dict(id=cid, versao=VERSAO, nomes=meta['nomes'], descricao=meta['descricao'],
                     autor=meta.get('autor', ''), slot_padrao=meta['slot_padrao'], wads=wads)

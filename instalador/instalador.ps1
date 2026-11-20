@@ -198,44 +198,45 @@ function Sha256($bytes, $off, $len) {
 
 function Entradas-Wad($d) {
     # Cabeçalho de 0x40 bytes: u32 tag, u32 tamanho, char nome[0x38]; dados alinhados a 16.
+    # (tag 0 usa o tamanho como contador, sem dados). Chave: "nome|tag|ocorrência".
     $r = @{}
+    $vistos = @{}
     $off = 0
     while ($off + 0x40 -le $d.Length) {
+        $tag = [BitConverter]::ToUInt32($d, $off)
         $tam = [BitConverter]::ToUInt32($d, $off + 4)
+        if ($tag -eq 0) { $tam = 0 }
         $fim = [Array]::IndexOf($d, [byte]0, $off + 8)
         if ($fim -lt 0 -or $fim -gt $off + 0x40) { $fim = $off + 0x40 }
         $nome = [Text.Encoding]::ASCII.GetString($d, $off + 8, $fim - $off - 8)
-        if ($nome -like '*.dds') { $r[$nome] = @{ dados = $off + 0x40; tam = [int]$tam } }
+        $k = "$nome|$tag"
+        $oc = 0; if ($vistos.ContainsKey($k)) { $oc = $vistos[$k] }
+        $vistos[$k] = $oc + 1
+        $r["$k|$oc"] = @{ dados = $off + 0x40; tam = [int]$tam }
         $off = ($off + 0x40 + $tam + 15) -band (-bnot 15)
     }
     return $r
 }
 
 function Montar-Wad($c, $w, $jogo) {
-    # $w = uma entrada de $c.wads: base (WAD original do jogo), destino, texturas, sha256_resultado
+    # $w = uma entrada de $c.wads: base (WAD original do jogo), destino, trechos, sha256_resultado
     $src = Join-Path $jogo ("EXEC\WAD\PS4_LE\" + $w.base)
     if (-not (Test-Path $src)) { throw ((S 'sem_wad') -f $src) }
     Write-Host ((S 'montando') -f $w.base)
     $d = [IO.File]::ReadAllBytes($src)
     $ent = Entradas-Wad $d
     $avisos = @()
-    foreach ($tx in $w.texturas) {
-        $e = $ent[$tx.nome]
-        if (-not $e) { throw "textura $($tx.nome)?" }
-        # procura o cabeçalho "DDS " no início da entrada
-        $dds = -1
-        for ($i = $e.dados; $i -lt $e.dados + 0x200; $i++) {
-            if ($d[$i] -eq 0x44 -and $d[$i + 1] -eq 0x44 -and $d[$i + 2] -eq 0x53 -and $d[$i + 3] -eq 0x20) { $dds = $i; break }
-        }
-        if ($dds -lt 0) { throw "DDS $($tx.nome)?" }
-        $ini = $dds + 128
-        if ($ini + $tx.tamanho -gt $e.dados + $e.tam) { throw "tamanho $($tx.nome)" }
-        if ((Sha256 $d $ini $tx.tamanho) -ne $tx.sha256_original) { $avisos += $tx.nome }
-        $novo = [IO.File]::ReadAllBytes((Join-Path $c.pasta $tx.arquivo))
+    foreach ($tr in $w.trechos) {
+        $e = $ent["$($tr.nome)|$($tr.tag)|$($tr.ocorrencia)"]
+        if (-not $e) { throw "entrada $($tr.nome)?" }
+        $ini = $e.dados + $tr.desloc
+        if ($tr.desloc + $tr.tamanho -gt $e.tam) { throw "tamanho $($tr.nome)" }
+        if ((Sha256 $d $ini $tr.tamanho) -ne $tr.sha256_original) { $avisos += $tr.nome }
+        $novo = [IO.File]::ReadAllBytes((Join-Path $c.pasta $tr.arquivo))
         [Array]::Copy($novo, 0, $d, $ini, $novo.Length)
     }
     if ($avisos.Count -gt 0) {
-        foreach ($a in $avisos) { Write-Host ((S 'hash_dif') -f $a) -ForegroundColor Yellow }
+        foreach ($a in ($avisos | Select-Object -Unique)) { Write-Host ((S 'hash_dif') -f $a) -ForegroundColor Yellow }
         if (-not $Sim) {
             if ($Acao) { throw (S 'cancelado') }
             $r = Read-Host (S 'continuar')

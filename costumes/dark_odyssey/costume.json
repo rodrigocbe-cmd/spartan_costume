@@ -23,22 +23,22 @@
   },
   {
    "base": "R_W_EXPLOSIVE1.WAD",
-   "texturas": "R_W_EXPLOSIVE0",
+   "texturas": "R_W_EXPLOSIVE1",
    "destino": "R_W_EXPLOSIVE1.WAD"
   },
   {
    "base": "R_W_EXPLOSIVE2.WAD",
-   "texturas": "R_W_EXPLOSIVE0",
+   "texturas": "R_W_EXPLOSIVE2",
    "destino": "R_W_EXPLOSIVE2.WAD"
   },
   {
    "base": "R_W_EXPLOSIVE3.WAD",
-   "texturas": "R_W_EXPLOSIVE0",
+   "texturas": "R_W_EXPLOSIVE3",
    "destino": "R_W_EXPLOSIVE3.WAD"
   },
   {
    "base": "R_W_EXPLOSIVE4.WAD",
-   "texturas": "R_W_EXPLOSIVE0",
+   "texturas": "R_W_EXPLOSIVE4",
    "destino": "R_W_EXPLOSIVE4.WAD"
   },
   {

@@ -38,15 +38,36 @@ Visuais (costumes) para **God of War III Remastered**. Foco principal: o port de
   corrente dourada. A troca Atena → Exílio no início do jogo usa esses mesmos WADs
   (única outra cópia das texturas: `R_KRATOSFEAR10`, inimigo — não alterado).
 - **Lâmina de Atena** (`R_W_EXPLOSIVE0..4`, início do jogo): `TX888F0896` (cabeça de dragão),
-  toda dourada com cabo preto. As armas são globais: valem para todos os trajes.
+  toda dourada com cabo preto.
+- **Rastros dos golpes** (`TXR_swordtrail`, 128x64 DXT5 com alfa): um diferente em cada
+  `R_W_EXPLOSIVE0..5` (nível) → recoloridos para dourado (saturado → âmbar, claro → dourado pálido).
+  Por isso cada EXPLOSIVEk tem sua pasta em `texturas/`. Texturas `TXR_*` (sem .dds) agora são
+  suportadas pelas ferramentas.
+- **Fogo e faíscas das lâminas**: texturas de chamas (`TX22A00174`, `TXD8C83914`, `TX9E182643`,
+  `TXA94E26B8`, brilho `TXBD708C9C`) recoloridas + **curvas de cor das partículas** (`PTS_*`, blocos de
+  chaves (t,R,G,B,A) via tabela em +0x120) trocadas de vermelho/laranja para dourado por
+  `ferramentas/particulas.py`, chamado em `costumes/dark_odyssey/pos_wad.py`. As armas são globais: valem para todos os trajes.
 - Script: `costumes/dark_odyssey/recolorir.py` (máscaras, caixas/polígonos UV e paleta).
 - Pendente: texturas azuladas `TX60366B5B`/`TXBEB53958` (função desconhecida, não alteradas),
   preview com print real do jogo, conferir lâminas no jogo.
 
-### Armadura do Deus da Guerra / God of War Armor (futuro)
-- Inspirada na armadura do Kratos no **GoW II**.
-- Referências: `referencias/god_armor/God of War Armor by _spartan_gamer.jpg` e
-  `referencias/god_armor/god_armor_1_1/` (port direto da armadura do GoW II; substitui `R_HERO00.WAD`).
+### Armadura do Deus da Guerra / God of War Armor (em andamento — fase 1)
+- Inspirada na armadura do Kratos no **GoW II**. Decisões do usuário (2026-11-20):
+  **geometria própria** (não usar o port de terceiros), cores **meio-termo** (dourado um pouco
+  mais escuro/gasto, pátina leve), bônus **ataque 2x, dano ½, orbes 4x** → `[2, 0.5, 4, 4, 4, 4, 0]`.
+  Slot planejado: índice 10 (`R_HERO10.WAD`, mensagem `*20009*`, registro 10 do R_PERM, `gocostume10`
+  — `costumeimages.hash_modelo` ainda só aceita índice ≤ 9).
+- Referências (`referencias/god_armor/`): `arte_spartan_gamer.jpg`; `soulcalibur_bd/` (PSP, OBJ+PNG:
+  `kratos_2p_god_armor` = God Armor, `kratos_1p`, `armas`); `port_gow2_god_armor_1_1/` (port de
+  terceiros — só referência; tem malha MG maior + 197 texturas 2048 + efeitos).
+- Fases: (1) decodificar malha MG; (2) regravar idêntico; (3) armadura a partir do modelo do
+  Soulcalibur, ajustada ao Kratos e com pesos transferidos da pele; (4) texturas + slot/bônus/imagem.
+- Malha (MG, tag 0x520001; Kratos = `MG_b826bd6e_0`, 1,4 MB): cabeçalho tipo 0x0d, 22 submalhas
+  (tabela de offsets a partir de 0x1c), registros de 20 B (`ffff0000` + 4 floats, esferas?).
+  Submalha: streams de 12 B = `u32 offset, u8 pos_no_vértice, u8 uso, u8 tipo, u8 ?, u32 bytes`.
+  Ex.: submalha 0 = 157 vértices, posição float3 stride 28 (0x112c), UV float2 (0x4e8);
+  índices u16 (lista de triângulos). Base dos offsets ainda não confirmada (no quadro do menu =
+  campo em 0x40 do MG). Ferramentas: `ferramentas/desmontar.py`, `disasm_scan.py`.
 
 ## Caminhos
 
@@ -87,6 +108,8 @@ Lista de trajes é **dados**, não código:
   descrição (1+ linhas). Índice → `R_Hero%02d.WAD` e linha da tabela de bônus. Oficiais: 20000..20007
   (índices 0..7; Deimos usa imagem heroImage10). 1ª linha do MSGS_TXT = capacidades
   `<ids> <linhas>` (aumentar ao inserir). Ferramenta: `ferramentas/lang.py`.
+- Odisseia: exclusão do olho na textura do corpo é um **disco** (raio 0.155), não caixa — a caixa
+  deixava vermelha a ponta de uma faixa da tatuagem das costas.
 - **Bônus** (`R_PERM.WAD`, offset `0x26813f8`, 16 registros de 7 floats, stride 0x1c):
   `[ataque, dano sofrido, orbe?, orbe?, orbe?, orbe vermelho, 0]` (verde/azul/amarelo nos 3 do meio).
   Registros 9..15 livres/neutros. Código que aplica: eboot `0x50e40` (traje do jogador em `0x420564`).
@@ -125,8 +148,10 @@ python -I costumes/dark_odyssey/recolorir.py
 python -I ferramentas/build.py dark_odyssey      # -> build/GoW3_Costumes_v<versão>.zip
 ```
 
-O pacote **não contém arquivos do jogo**: leva só os pixels das texturas alteradas
-(`dados/<id>/*.bin` + `manifest.json` com SHA-256 do original e do resultado). O instalador
+O pacote **não contém arquivos do jogo**: leva só os **trechos alterados** de cada WAD
+(`dados/<id>/*.bin` + `manifest.json`: entrada nome/tag/ocorrência, deslocamento, tamanho,
+SHA-256 do original e do resultado). Texturas = pixels; outras entradas (ex.: partículas) = dados
+inteiros. Ajustes não-textura do traje ficam em `costumes/<id>/pos_wad.py` (rodado pelo build). O instalador
 lê o `R_HERO00.WAD` do usuário, aplica as texturas, confere o hash e grava o mod
 (SpartanPort) ou o arquivo para PS4. Teste sem prompts:
 `instalador.ps1 -Acao instalar|remover|ps4 -Costume <id> -Slot R_HERO0x -ModsDir X -GameDir X`

@@ -8,9 +8,14 @@ import wad
 
 TEX_TAG = 0xd0001
 
+def nome_base(nome):
+    """Nome do arquivo PNG: sem a extensão .dds (texturas TXR_ não têm extensão)."""
+    return nome[:-4] if nome.lower().endswith('.dds') else nome
+
+
 def textures(data):
     for e in wad.parse(data):
-        if e['tag'] == TEX_TAG and e['name'].lower().endswith('.dds'):
+        if e['tag'] == TEX_TAG and (e['name'].lower().endswith('.dds') or e['name'].startswith('TXR_')):
             body = data[e['data_off']:e['data_off'] + e['size']]
             dds = body.find(b'DDS ')
             if dds < 0:
@@ -28,7 +33,7 @@ if __name__ == '__main__':
     info = []
     from PIL import Image
     for e, dds, w, h, mips, fourcc, body in textures(data):
-        name = e['name'][:-4]
+        name = nome_base(e['name'])
         p = os.path.join(out, 'dds', name + '.dds')
         open(p, 'wb').write(body[dds:])
         ok = ''
