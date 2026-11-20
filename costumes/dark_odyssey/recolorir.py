@@ -33,6 +33,7 @@ TEX_METAL = ['TXE90D274D.FDB1BC40']                          # ombreira / bracel
 TEX_CINTO = ['TX3DEC657A.5633D663']                          # cinto, correntes, faixas
 TEX_NORMAL_CORPO = 'TX27586F46.42C0C6FA'   # normal map do corpo (DXT5: x no alfa, y no verde)
 NORMAL_PLANA = np.array([255, 126, 0, 127]) / 255.0   # valor "plano" medido na pele em volta do olho
+TEX_AO_CORPO = 'TX3F8EBE10.5121BB65'       # mapa claro do corpo (innereye_m): tem a pupila preta
 TEX_AZUL_CORPO = 'TX60366B5B.8595A315'     # versão azulada do corpo (chest_m, outereye_m)
 TEX_AZUL_ROSTO = 'TXBEB53958.0FB769D9'     # versão azulada da cabeça (head_m, eyegasket_m)
 WAD_EXILIO = 'R_W_EXPLOSIVE5'              # Lâminas do Exílio (a maior parte do jogo e o menu)
@@ -196,6 +197,16 @@ def main():
     nrgb = nrgb * (1 - o) + NORMAL_PLANA[:3] * o           # sem relevo de íris
     nal = nal * (1 - o) + NORMAL_PLANA[3] * o
     salvar(TEX_NORMAL_CORPO, nrgb, nal)
+    # mapa claro do olho interno: apaga pupila/anel escuro com o branco da borda do globo
+    argb, aal = carregar(TEX_AO_CORPO)
+    o = mascara_olho(argb.shape)
+    H, W = o.shape
+    yy, xx = np.mgrid[0:H, 0:W]
+    r = np.hypot(xx - 0.82 * W, yy - 0.30 * H)
+    anel = (r > 0.10 * W) & (r < 0.125 * W)
+    branco_ao = np.median(argb[anel], 0)
+    argb = argb * (1 - o[..., None]) + branco_ao * o[..., None]
+    salvar(TEX_AO_CORPO, argb, aal)
 
     # Texturas azuladas (pele "pálida", mesma UV em meia resolução): acompanham a
     # recoloração mantendo a relação de brilho com as originais.

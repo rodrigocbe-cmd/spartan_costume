@@ -27,9 +27,9 @@ Visuais (costumes) para **God of War III Remastered**. Foco principal: o port de
 - Roupas/armadura: saia preta com grega dourada; ombreira, braceletes, cinto, grevas/botas
   e asas de Hermes **dourados** (âmbar ~`#ba802e`); braçadeiras dos antebraços douradas
   (elos claros sobre fundo dourado escuro, como no modelo do GoW II).
-- **Olhos todo brancos** (sem íris/pupila; brilho opcional, não feito). O olho usa 3 texturas:
-  `innereye_m` → cor do corpo `TX27CF5CC1`; `outereye_m` → `TX60366B5B` (azulada) + normal
-  `TX27586F46` (relevo da íris foi aplainado). Disco do olho na UV: centro (0.82, 0.30).
+- **Olhos todo brancos** (sem íris/pupila; brilho opcional, não feito). O olho usa 4 texturas:
+  `innereye_m` → cor `TX27CF5CC1` + mapa claro `TX3F8EBE10` (tinha a pupila preta);
+  `outereye_m` → `TX60366B5B` (azulada) + normal `TX27586F46` (relevo aplainado). Disco do olho na UV: centro (0.82, 0.30).
 - Texturas azuladas `TX60366B5B` (corpo) e `TXBEB53958` (cabeça) = versão "pálida" da pele
   usada também por `chest_m`/`head_m`; são recoloridas mantendo a razão de brilho.
 - **Lâminas do Exílio** (`R_W_EXPLOSIVE5`, a maior parte do jogo e o menu): cor `TXA4FBD109`
