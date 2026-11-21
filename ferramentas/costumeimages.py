@@ -51,8 +51,9 @@ def nome_textura(indice):
 
 def hash_modelo(indice):
     # mesmo padrão dos originais (e075da3c..3b = costume0..7: último byte = 0x0c ^ dígito)
-    assert 0 <= indice <= 9, 'índices >= 10 precisam de outro esquema de nome'
-    return 0xe075da00 | (0x0c ^ (0x30 + indice))
+    if indice <= 9:
+        return 0xe075da00 | (0x0c ^ (0x30 + indice))
+    return 0xe075d000 | (indice & 0xff)          # índices >= 10: nomes próprios (sem colisão)
 
 
 def adicionar_imagem(d, indice, imagem_rgba):
@@ -101,7 +102,10 @@ def adicionar_imagem(d, indice, imagem_rgba):
         n = n.replace('gocostume%d' % MODELO, 'gocostume%d' % indice).replace('SCP_costume%d' % MODELO, 'SCP_costume%d' % indice)
         _renomear(b, n)
         if e['tag'] == 0x1f0001 and e['name'] == '':
-            _troca(b, b'costume%d\x00' % MODELO, b'costume%d\x00' % indice)
+            velho = b'costume%d' % MODELO
+            novo = b'costume%d' % indice
+            # o campo de nome é fixo (preenchido com zeros): grava o nome novo ocupando os zeros
+            _troca(b, velho + b'\x00' * (len(novo) - len(velho) + 1), novo + b'\x00')
         if e['name'] == 'gocostume%d' % MODELO and e['tag'] == 0x1f0001:
             num = struct.unpack_from('<H', b, HDR + 0x3c)[0]
             maior = max(struct.unpack_from('<H', bb, HDR + 0x3c)[0] for ee, bb in bl

@@ -5,11 +5,120 @@
   "en": "Dark Odyssey"
  },
  "descricao": {
-  "pt": "Kratos com pele cinza-carvão, olhos brancos e tatuagem dourada (inspirado no GoW Ragnarok), armadura em preto e dourado (inspirado no GoW II) e Lâminas do Exílio douradas com cabo preto.",
-  "en": "Kratos with charcoal skin, white eyes and a golden tattoo (inspired by GoW Ragnarok), black and gold armor (inspired by GoW II) and golden Blades of Exile with black hilts."
+  "pt": "Kratos com pele cinza-carvão, olhos brancos e tatuagem dourada (inspirado no GoW Ragnarok), armadura em preto e dourado (inspirado no GoW II) e Lâminas de Atena e do Exílio douradas com cabo preto, fogo, faíscas e rastros dourados.",
+  "en": "Kratos with charcoal skin, white eyes and a golden tattoo (inspired by GoW Ragnarok), black and gold armor (inspired by GoW II) and golden Blades of Athena and Exile with black hilts, golden fire, sparks and trails."
  },
  "autor": "GoW III Costumes",
- "slot_padrao": "R_HERO00",
+ "bonus": [
+  2,
+  2,
+  1,
+  1,
+  1,
+  4,
+  0
+ ],
+ "imagem_menu": "menu/imagem_menu.png",
+ "textos_jogo": {
+  "BR": [
+   "Odisseia Sombria",
+   "Provoca o dobro dos danos de ataque.",
+   "Inimigos causam o dobro do dano de ataque.",
+   "As orbes vermelhas quadruplicam seu valor.",
+   "Os troféus estão desabilitados."
+  ],
+  "PT": [
+   "Odisseia Sombria",
+   "Provoca o dobro dos danos de ataque.",
+   "Os inimigos provocam o dobro dos danos de ataque.",
+   "As Esferas Vermelhas valem quatro vezes mais.",
+   "Os Troféus estão desactivados"
+  ],
+  "EN": [
+   "Dark Odyssey",
+   "Dark Odyssey does double attack damage.",
+   "Enemies do double attack damage.",
+   "Red orbs are worth four times their value.",
+   "Trophies are disabled."
+  ],
+  "ES": [
+   "Odisea oscura",
+   "Odisea oscura causa el doble de daño de ataque.",
+   "Los enemigos causan el doble de daño de ataque.",
+   "Los orbes rojos aumentan cuatro veces su valor.",
+   "Los trofeos están desactivados."
+  ],
+  "FR": [
+   "Odyssée sombre",
+   "Inflige deux fois plus de dégâts.",
+   "Les ennemis infligent le double de dégâts.",
+   "Les orbes rouges valent quatre fois plus.",
+   "Trophées désactivés."
+  ],
+  "IT": [
+   "Odissea oscura",
+   "Odissea oscura infligge il doppio dei danni.",
+   "I nemici infliggono il doppio dei danni.",
+   "Le Sfere rosse valgono quattro volte tanto.",
+   "I trofei sono disabilitati."
+  ],
+  "DE": [
+   "Dunkle Odyssee",
+   "Dunkle Odyssee fügt doppelten Angriffsschaden zu.",
+   "Gegner fügen doppelten Angriffsschaden zu.",
+   "Rote Orbs haben vierfachen Wert.",
+   "Trophäen sind deaktiviert."
+  ],
+  "NL": [
+   "Duistere odyssee",
+   "Richt dubbel zoveel schade aan.",
+   "Vijanden richten dubbel zoveel schade aan.",
+   "Rode bollen zijn vier keer zoveel waard.",
+   "Trofeeën uitgeschakeld."
+  ],
+  "PL": [
+   "Mroczna odyseja",
+   "Mroczna odyseja zadaje podwójne obrażenia.",
+   "Przeciwnicy zadają podwójne obrażenia.",
+   "Czerwone kule są warte cztery razy więcej.",
+   "Trofea są niedostępne."
+  ],
+  "TR": [
+   "Karanlık Odise",
+   "Normalin iki katı fazla saldırı hasarı verir.",
+   "Düşmanlar iki katı fazla saldırı hasarı verir.",
+   "Kırmızı küreler normalin dört katı daha değerlidir.",
+   "Kupalar devre dışı."
+  ],
+  "RU": [
+   "Темная одиссея",
+   "Темная одиссея наносит двойной урон.",
+   "Противники наносят двойной урон.",
+   "Красные сферы ценятся в четыре раза выше.",
+   "Призы недоступны."
+  ],
+  "JA": [
+   "ダークオデッセイ",
+   "攻撃力が二倍になる",
+   "敵の攻撃力も二倍になる",
+   "レッドオーブが四倍の価値になる",
+   "トロフィーは無効になった"
+  ],
+  "KO": [
+   "다크 오디세이",
+   "다크 오디세이는 공격력이 2배",
+   "적의 공격력도 2배",
+   "붉은 오브가 4배의 가치",
+   "트로피 획득 불가"
+  ],
+  "ZH": [
+   "黑暗奧德賽",
+   "黑暗奧德賽攻擊力加倍，",
+   "且敵人攻擊力亦加倍。",
+   "紅色寶珠價值暴增為四倍。",
+   "獎盃全部無效。"
+  ]
+ },
  "wads": [
   {
    "base": "R_HERO00.WAD",

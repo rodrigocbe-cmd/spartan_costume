@@ -1,104 +1,124 @@
-"""Gera o pacote de distribuição de um visual (costume).
+"""Gera o pacote de distribuição com todos os visuais (trajes em slots novos).
 
-uso: python -I ferramentas/build.py dark_odyssey
+uso: python -I ferramentas/build.py [id1 id2 ...]     (padrão: TRAJES, nessa ordem)
 
-Para cada WAD listado em costumes/<id>/costume.json ("wads"):
-1. Codifica os PNGs de costumes/<id>/texturas/<texturas>/ (DXT + mipmaps) sobre o WAD original.
-2. Grava o WAD completo em build/<id>/ (só para teste local; NÃO é distribuído).
-3. Extrai só os pixels das texturas alteradas para o pacote (deduplicados por hash).
-Depois monta build/dist/<pasta>/ com o instalador e compacta em build/<pasta>_v<versão>.zip.
-O WAD do jogo é lido da cópia do próprio usuário na instalação.
+Para cada traje: monta seus WADs (texturas + pos_wad.py, ver trajes.py) e grava um DELTA
+(delta.py: "copiar do arquivo original do usuário" + bytes novos) — o pacote não leva arquivos
+do jogo. Para cada combinação de trajes instalados, grava os deltas dos arquivos compartilhados
+(R_PERM, R_LANG_*, COSTUMEIMAGES). O instalador escolhe a combinação e aplica os deltas.
+Saída: build/dist/GoW3 Costumes/ (instalador .exe) e GoW3_Costumes_v<versão>.zip na raiz do projeto.
 """
-import hashlib, json, os, shutil, sys, zipfile
+import hashlib, itertools, json, os, shutil, sys, zipfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from reempacotar import rebuild
-from extrair_texturas import textures
-import importlib.util
-import wad as wadmod
+import delta, trajes
 
-RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-VERSAO = '0.4.0'
+RAIZ = trajes.RAIZ
+VERSAO = '1.0.0'
 PASTA_DIST = 'GoW3 Costumes'
+TRAJES = ['dark_odyssey']   # ordem do pacote = ordem dos slots (9, 10, ...)
+# (god_armor fica fora da v1.0.0 — em desenvolvimento; testar com: build.py dark_odyssey god_armor)
 
 
 def sha(b):
     return hashlib.sha256(b).hexdigest()
 
 
-def trechos(orig, novo, ddir):
-    """Entradas cujos dados mudaram → trechos (nome, ocorrência, deslocamento, tamanho).
-    Texturas: só os pixels (depois do cabeçalho DDS). Outras entradas: os dados inteiros."""
-    out = []
-    vistos = {}
-    eo = wadmod.parse(orig)
-    for e in eo:
-        k = (e['name'], e['tag'])
-        oc = vistos.get(k, 0); vistos[k] = oc + 1
-        a = orig[e['data_off']:e['data_off'] + e['size']]
-        b = novo[e['data_off']:e['data_off'] + e['size']]
-        if a == b:
-            continue
-        ini = 0
-        dds = a.find(b'DDS ', 0, 0x200) if e['tag'] == 0xd0001 else -1
-        if dds >= 0:
-            ini = dds + 128
-        pa, pb = a[ini:], b[ini:]
-        h = sha(pb)
-        arq = h[:16] + '.bin'
-        if not os.path.exists(os.path.join(ddir, arq)):
-            open(os.path.join(ddir, arq), 'wb').write(pb)
-        out.append(dict(nome=e['name'], tag=e['tag'], ocorrencia=oc, desloc=ini, tamanho=len(pb),
-                        arquivo=arq, sha256_original=sha(pa), sha256_novo=h))
-    return out
+class Pacote:
+    def __init__(self, ddir):
+        self.ddir = ddir
+        self.cache_fontes = {}
+
+    def fonte(self, rel):
+        if rel not in self.cache_fontes:
+            self.cache_fontes[rel] = trajes.ler_jogo(rel)
+        return self.cache_fontes[rel]
+
+    def item(self, fonte, destino, novo, **extra):
+        orig = self.fonte(fonte)
+        d = delta.criar(orig, novo)
+        arq = sha(d)[:16] + '.gw3d'
+        p = os.path.join(self.ddir, arq)
+        if not os.path.exists(p):
+            open(p, 'wb').write(d)
+        return dict(fonte=fonte, destino=destino, delta=arq, sha256_fonte=sha(orig),
+                    sha256_resultado=sha(novo), tamanho=len(novo), **extra)
 
 
-def main(cid):
-    cdir = os.path.join(RAIZ, 'costumes', cid)
-    meta = json.load(open(os.path.join(cdir, 'costume.json'), encoding='utf-8'))
+CSC = r'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe'
 
+
+def icone(destino):
+    """Ícone do instalador: cabeça/tronco da imagem do menu da Odisseia Sombria."""
+    from PIL import Image
+    im = Image.open(os.path.join(RAIZ, 'costumes', 'dark_odyssey', 'menu', 'imagem_menu.png')).convert('RGBA')
+    caixa = im.getbbox()
+    x0, y0, x1, _ = caixa
+    lado = x1 - x0
+    q = im.crop((x0, y0, x1, y0 + lado))
+    q.save(destino, sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
+
+
+def compilar_instalador(dist, ddir):
+    """Compila instalador/Instalador.cs (WinForms, .NET 4 do Windows) com os dados como recursos."""
+    import subprocess
+    exe = os.path.join(dist, f'GoW3 Costumes {VERSAO}.exe')
+    ico = os.path.join(RAIZ, 'build', 'instalador.ico')
+    icone(ico)
+    args = [CSC, '/nologo', '/target:winexe', '/optimize+', '/codepage:65001', '/platform:anycpu',
+            '/r:System.Web.Extensions.dll', '/r:System.Windows.Forms.dll', '/r:System.Drawing.dll',
+            '/win32icon:' + ico, '/out:' + exe]
+    for f in sorted(os.listdir(ddir)):
+        args.append('/resource:%s,dados/%s' % (os.path.join(ddir, f), f))
+    args.append(os.path.join(RAIZ, 'instalador', 'Instalador.cs'))
+    r = subprocess.run(args, capture_output=True, text=True, encoding='cp850', errors='replace')
+    if r.returncode != 0:
+        print(r.stdout, r.stderr)
+        raise SystemExit('falha ao compilar o instalador')
+    print('Instalador:', exe)
+    return exe
+
+
+def main(ids):
     dist = os.path.join(RAIZ, 'build', 'dist', PASTA_DIST)
     if os.path.isdir(dist):
         shutil.rmtree(dist)
-    ddir = os.path.join(dist, 'dados', cid)
+    ddir = os.path.join(dist, 'dados')
     os.makedirs(ddir)
+    pk = Pacote(ddir)
 
-    pos = None
-    hook = os.path.join(cdir, 'pos_wad.py')
-    if os.path.exists(hook):
-        spec = importlib.util.spec_from_file_location('pos_wad', hook)
-        pos = importlib.util.module_from_spec(spec); spec.loader.exec_module(pos)
-    wads = []
-    for w in meta['wads']:
-        base = os.path.join(RAIZ, 'original', 'wad', w['base'])
-        assert os.path.exists(base), f'copie {w["base"]} do jogo para original/wad/'
-        wad_out = os.path.join(RAIZ, 'build', cid, w['base'])
-        print('Reempacotando', w['base'])
-        rebuild(base, os.path.join(cdir, 'texturas', w['texturas']), wad_out, verbose=False)
-        if pos is not None:
-            dados = pos.processar(w['base'][:-4], open(wad_out, 'rb').read())
-            open(wad_out, 'wb').write(dados)
-        orig, novo = open(base, 'rb').read(), open(wad_out, 'rb').read()
-        assert len(orig) == len(novo)
-        tex = trechos(orig, novo, ddir)
-        print(f'  {len(tex)} trechos alterados')
-        wads.append(dict(base=w['base'], destino=w['destino'], sha256_resultado=sha(novo), trechos=tex))
+    lista = []
+    for cid in ids:
+        m = trajes.meta(cid)
+        arqs = []
+        for fonte, dest, dados in trajes.arquivos_traje(cid):
+            print(cid, fonte, '->', dest, flush=True)
+            arqs.append(pk.item(fonte, dest, dados))
+        prev = os.path.join(m['_dir'], 'preview.png')
+        if os.path.exists(prev):
+            shutil.copy(prev, os.path.join(ddir, 'preview_%s.png' % cid))
+        lista.append(dict(id=cid, slot=m['slot'], nomes=m['nomes'], descricao=m['descricao'], autor=m.get('autor', ''),
+                          preview=('preview_%s.png' % cid) if os.path.exists(prev) else '', arquivos=arqs))
 
-    manifest = dict(id=cid, versao=VERSAO, nomes=meta['nomes'], descricao=meta['descricao'],
-                    autor=meta.get('autor', ''), slot_padrao=meta['slot_padrao'], wads=wads)
-    json.dump(manifest, open(os.path.join(ddir, 'manifest.json'), 'w', encoding='utf-8'),
-              ensure_ascii=False, indent=1)
-    prev = os.path.join(cdir, 'preview.png')
-    if os.path.exists(prev):
-        shutil.copy(prev, os.path.join(ddir, 'preview.png'))
+    comp = {}
+    slots = trajes.com_slot(ids)
+    for n in range(1, len(slots) + 1):
+        for sub in itertools.combinations(slots, n):
+            chave = '+'.join(sub)
+            print('compartilhados:', chave, flush=True)
+            comp[chave] = [pk.item(f, d, dados, opcional=op) for f, d, dados, op in trajes.compartilhados(list(sub))]
 
-    inst = os.path.join(RAIZ, 'instalador')
-    for f in os.listdir(inst):
-        shutil.copy(os.path.join(inst, f), dist)
+    manifest = dict(versao=VERSAO, primeiro_indice=trajes.PRIMEIRO_INDICE, trajes=lista, compartilhados=comp)
+    json.dump(manifest, open(os.path.join(ddir, 'manifest.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
-    zp = os.path.join(RAIZ, 'build', f'{PASTA_DIST} v{VERSAO}.zip'.replace(' ', '_'))
-    for velho in os.listdir(os.path.join(RAIZ, 'build')):
-        if velho.endswith('.zip'):
-            os.remove(os.path.join(RAIZ, 'build', velho))
+    compilar_instalador(dist, ddir)
+    shutil.rmtree(ddir)                                   # dados vão embutidos no .exe
+    shutil.copy(os.path.join(RAIZ, 'instalador', 'LEIA-ME.txt'), dist)
+
+    zp = os.path.join(RAIZ, f'{PASTA_DIST} v{VERSAO}.zip'.replace(' ', '_'))     # distribuição na raiz do projeto
+    for pasta in (RAIZ, os.path.join(RAIZ, 'build')):
+        for velho in os.listdir(pasta):
+            if velho.startswith('GoW3_Costumes_v') and velho.endswith('.zip'):
+                os.remove(os.path.join(pasta, velho))
     with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for r, _, fs in os.walk(dist):
             for f in fs:
@@ -108,4 +128,4 @@ def main(cid):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else 'dark_odyssey')
+    main(sys.argv[1:] or TRAJES)

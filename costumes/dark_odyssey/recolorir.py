@@ -257,6 +257,9 @@ def main():
         rgb, al = carregar(n)
         L = lum(rgb)
         salvar(n, tingir(L, OURO, np.median(L[L > 0.2]), 1.0), al)
+    # especular do material fleece (ombreira): no jogo a ombreira dourada ficava estourada
+    rgb, al = carregar('TX2E5E7D75.DA8083B2')
+    salvar('TX2E5E7D75.DA8083B2', rgb * 0.6, al)
 
     # Cinto/braçadeiras/correntes (mapa do GoW II): tudo dourado. Nas braçadeiras dos
     # antebraços (peça das correntes), elos claros sobre fundo dourado mais escuro.

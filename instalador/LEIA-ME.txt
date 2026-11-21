@@ -1,70 +1,92 @@
-GoW III Costumes - visuais para God of War III Remastered
-==========================================================
+GoW III Costumes 1.0.0 - visuais para God of War III Remastered
+=================================================================
 
 [Português]
 
-Visuais incluídos
-  * Odisseia Sombria - pele cinza-carvão, olhos brancos e tatuagem dourada (inspirado no
-    GoW Ragnarok), armadura em preto e dourado (inspirado no GoW II) e Lâminas do Exílio
-    douradas com cabo preto. Obs.: as lâminas são as mesmas para todos os trajes
-    (arquivos R_W_EXPLOSIVE0..5.WAD).
+Incluído
+  * Odisseia Sombria - traje NOVO no menu de trajes (nenhum traje do jogo é substituído):
+    pele cinza-carvão, olhos brancos e tatuagem dourada (inspirado no GoW Ragnarok),
+    armadura em preto e dourado (inspirado no GoW II) e Lâminas de Atena e do Exílio
+    douradas com cabo preto, fogo, faíscas e rastros dourados.
+    Bônus (como no GoW II): ataque 2x, dano sofrido 2x, orbes vermelhas 4x.
+    Os troféus ficam desabilitados ao usar o traje (como nos trajes do jogo).
+    Obs.: o jogo usa as mesmas lâminas para todos os trajes; com a Odisseia Sombria
+    instalada, as lâminas ficam douradas em qualquer traje.
 
 Requisitos
-  * Sua própria cópia do jogo (CUSA01623 ou CUSA01715). Este pacote NÃO contém arquivos
-    do jogo: o instalador lê os WADs originais do seu jogo e aplica apenas as texturas novas.
+  * Sua própria cópia do jogo (CUSA01623). Este pacote NÃO contém arquivos do jogo: o
+    instalador lê os arquivos originais do seu jogo e aplica só as partes novas.
 
 SpartanPort (PC)
   1. Extraia este zip em qualquer pasta.
-  2. Dê duplo clique em "Instalar.bat".
-  3. Escolha [1] Instalar visual. O instalador encontra o SpartanPort e a pasta do jogo
-     (pelo settings.json do SpartanPort) ou pede para você selecioná-las.
-  4. Escolha o slot:
-       R_HERO00 = Kratos padrão (o visual aparece sempre)
-       R_HERO01..R_HERO08 = um dos trajes extras do menu de trajes
-  5. Abra o SpartanPort, aba Mods, e confira se "GoW3 Costumes - ..." está ativado.
+  2. Abra "GoW3 Costumes 1.0.0.exe".
+  3. Confira a pasta do jogo (a pasta do SpartanPort, onde está o SpartanPort.exe). Ela é
+     preenchida automaticamente quando encontrada; se não, use "Procurar...".
+  4. Marque os visuais e clique em "Instalar / atualizar".
+  5. Abra o SpartanPort, aba Mods, e confira se "GoW3 Costumes" está ativado.
+  6. No jogo: menu Extras > Seleção de traje. A Odisseia Sombria aparece depois dos trajes
+     do jogo.
 
-  Remover: rode "Instalar.bat" e escolha [2] Remover visual, ou só desative o mod
-  na aba Mods do launcher. O jogo original nunca é alterado.
+  Remover: abra o instalador e clique em "Remover tudo" (ou desmarque um visual e clique em
+  "Instalar / atualizar"), ou só desative o mod na aba Mods do launcher. O jogo original
+  nunca é alterado.
+
+  Se o Windows avisar que o programa não é reconhecido (SmartScreen), clique em
+  "Mais informações" > "Executar assim mesmo".
 
 PS4 (GoldHEN)
-  1. Rode "Instalar.bat" e escolha [3] Gerar arquivos para PS4.
-  2. Será criada a pasta "PS4 - <visual>/EXEC/WAD/PS4_LE/" com os arquivos do visual.
+  1. Abra o instalador, marque os visuais e clique em "Gerar arquivos para PS4...".
+  2. Selecione a pasta com os arquivos do jogo (a que tem eboot.bin e a pasta EXEC) e onde
+     salvar. Será criada a pasta "GoW3 Costumes PS4/EXEC/".
   3. Copie a pasta EXEC para o PS4 usando um redirecionador de arquivos, por exemplo o
-     plugin AFR do GoldHEN: /data/GoldHEN/AFR/<ID do jogo>/EXEC/WAD/PS4_LE/
+     plugin AFR do GoldHEN: /data/GoldHEN/AFR/<ID do jogo>/EXEC/
   Para remover, apague os arquivos copiados.
 
 Idioma
-  O instalador e os nomes dos visuais aparecem em português quando o sistema está em
-  português; em outros idiomas, aparecem em inglês.
+  O instalador aparece em português quando o Windows está em português. No jogo, o nome e
+  a descrição do traje aparecem no idioma do jogo (16 idiomas).
 
 
 [English]
 
-Included costumes
-  * Dark Odyssey - charcoal skin, white eyes and golden tattoo (inspired by GoW Ragnarok),
-    black and gold armor (inspired by GoW II) and golden Blades of Exile with black hilts.
-    Note: the blades are shared by all costumes (files R_W_EXPLOSIVE0..5.WAD).
+Included
+  * Dark Odyssey - NEW costume in the costume menu (no game costume is replaced): charcoal
+    skin, white eyes and golden tattoo (inspired by GoW Ragnarok), black and gold armor
+    (inspired by GoW II) and golden Blades of Athena and Exile with black hilts, golden
+    fire, sparks and trails.
+    Bonus (as in GoW II): 2x attack, 2x damage taken, 4x red orbs.
+    Trophies are disabled while using the costume (as with the game's costumes).
+    Note: the game uses the same blades for every costume; with Dark Odyssey installed,
+    the blades are golden in any costume.
 
 Requirements
-  * Your own copy of the game (CUSA01623 or CUSA01715). This package contains NO game
-    files: the installer reads the original WADs from your game and applies only the new textures.
+  * Your own copy of the game (CUSA01623). This package contains NO game files: the
+    installer reads the original files from your game and applies only the new parts.
 
 SpartanPort (PC)
   1. Extract this zip anywhere.
-  2. Double-click "Instalar.bat".
-  3. Choose [1] Install costume. The installer finds SpartanPort and the game folder
-     (from SpartanPort's settings.json) or asks you to select them.
-  4. Choose the slot:
-       R_HERO00 = default Kratos (costume always shown)
-       R_HERO01..R_HERO08 = one of the bonus costumes in the costume menu
-  5. Open SpartanPort, Mods tab, and make sure "GoW3 Costumes - ..." is enabled.
+  2. Open "GoW3 Costumes 1.0.0.exe".
+  3. Check the game folder (the SpartanPort folder, with SpartanPort.exe). It is filled in
+     automatically when found; otherwise use "Browse...".
+  4. Check the costumes and click "Install / update".
+  5. Open SpartanPort, Mods tab, and make sure "GoW3 Costumes" is enabled.
+  6. In game: Extras menu > Costume selection. Dark Odyssey comes after the game's costumes.
 
-  Remove: run "Instalar.bat" and choose [2] Remove costume, or just disable the mod in
-  the launcher's Mods tab. The original game is never modified.
+  Remove: open the installer and click "Remove all" (or uncheck a costume and click
+  "Install / update"), or just disable the mod in the launcher's Mods tab. The original
+  game is never modified.
+
+  If Windows warns that the app is not recognized (SmartScreen), click "More info" >
+  "Run anyway".
 
 PS4 (GoldHEN)
-  1. Run "Instalar.bat" and choose [3] Build files for PS4.
-  2. A folder "PS4 - <costume>/EXEC/WAD/PS4_LE/" is created with the costume files.
+  1. Open the installer, check the costumes and click "Build files for PS4...".
+  2. Select the folder with the game files (the one with eboot.bin and the EXEC folder) and
+     where to save. A folder "GoW3 Costumes PS4/EXEC/" is created.
   3. Copy the EXEC folder to the PS4 with a file redirector, e.g. the GoldHEN AFR plugin:
-     /data/GoldHEN/AFR/<game ID>/EXEC/WAD/PS4_LE/
+     /data/GoldHEN/AFR/<game ID>/EXEC/
   To remove, delete the copied files.
+
+Language
+  The installer is shown in Portuguese when Windows is in Portuguese. In game, the
+  costume name and description are shown in the game's language (16 languages).
