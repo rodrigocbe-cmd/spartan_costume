@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- GoW III Costumes: laminas douradas so no traje Odisseia Sombria (slot {INDICE} hex).
+     Gerado por ferramentas/patch_laminas.py. Desvia a funcao que carrega WADs: com esse traje,
+     "R_W_Explosive<n>" vira "R_W_GoldBlade<n>" (WADs dourados instalados pelo mod). -->
+<Patch>
+    <TitleID>
+        <ID>CUSA01623</ID>
+        <ID>CUSA01715</ID>
+    </TitleID>
+    <Metadata Title="God of War III Remastered" Name="GoW3 Costumes - Laminas douradas da Odisseia Sombria" Note="Golden blades only with the Dark Odyssey costume." Author="GoW III Costumes" PatchVer="1.0" AppVer="01.02" AppElf="eboot.bin" isEnabled="true">
+        <PatchList>
+            <Line Type="bytes" Address="0x005f4730" Value="e9{rel:p1:0}90" Pattern="55 48 89 e5 41 57 41 56 41 55 41 54 53 50 41 89 f6 49 89 fd 48 8d 05 d5" At="0"/>
+            <Line Type="bytes" Address="0x005073c1" Value="833d{rel:traje:1}{INDICE}0f85{rel:sai:0}eb41" Pattern="4d 8d b7 90 00 00 00 49 8b 9f 90 00 00 00 eb 15 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00" At="16"/>
+            <Line Type="bytes" Address="0x00507411" Value="817f044578706c0f85{rel:sai:0}eb41" Pattern="4d 8d b7 a0 00 00 00 49 8b 9f a0 00 00 00 eb 15 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00" At="16"/>
+            <Line Type="bytes" Address="0x00507461" Value="c74704476f6c64eb47" Pattern="4d 8d b7 b0 00 00 00 49 8b 9f b0 00 00 00 eb 15 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00" At="16"/>
+            <Line Type="bytes" Address="0x005074b1" Value="c74708426c6164e9{rel:sai:0}" Pattern="4d 8d b7 c0 00 00 00 49 8b 9f c0 00 00 00 eb 15 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00" At="16"/>
+            <Line Type="bytes" Address="0x00508c51" Value="554889e54157e9{rel:volta:0}" Pattern="1f 40 00 ff c1 b8 00 00 00 00 83 f9 1f 7f 14 48 8d 82 f0 00 00 00 48 83 ba d8 01 00 00 00 48 89 c2 74 e0 c3 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00" At="36"/>
+        </PatchList>
+        <Target Name="p1" Address="0x005073c1" Line="1"/>
+        <Target Name="sai" Address="0x00508c51" Line="5"/>
+        <Target Name="volta" Address="0x005f4736" Pattern="41 56 41 55 41 54 53 50 41 89 f6 49 89 fd 48 8d" At="0"/>
+        <Target Name="traje" Address="0x007c2b70" Pattern="48 8d 0d a7 e9 31 00 8b 0c 81 89 0d aa 0f 2c 00 48 8d 3d c3" At="12" Ref="1" Tail="0"/>
+    </Metadata>
+</Patch>

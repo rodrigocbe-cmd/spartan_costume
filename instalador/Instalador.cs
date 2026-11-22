@@ -65,7 +65,8 @@ namespace GoW3Costumes
                 { "pronto", "Pronto! Visuais instalados no mod \"{0}\":" },
                 { "pronto2", "Abra o SpartanPort, aba Mods, e confira se o mod \"{0}\" está ativado. No jogo: menu Extras > Seleção de traje." },
                 { "removido_tudo", "Todos os visuais foram removidos (mod \"{0}\" apagado)." },
-                { "ps4_ok", "Arquivos para PS4 gerados em:\n{0}\n\nCopie a pasta EXEC para o PS4 com um redirecionador de arquivos (ex.: plugin AFR do GoldHEN: /data/GoldHEN/AFR/<ID do jogo>/EXEC/)." },
+                { "ps4_ok", "Arquivos para PS4 gerados em:\n{0}\n\nCopie a pasta EXEC para o PS4 com um redirecionador de arquivos (ex.: plugin AFR do GoldHEN: /data/GoldHEN/AFR/<ID do jogo>/EXEC/). Se houver a pasta GoldHEN ao lado, adicione o patch dela aos patches do GoldHEN (/data/GoldHEN/patches/xml/CUSA01623.xml) e ative-o." },
+                { "patch", "Patch de código do visual: {0}" },
                 { "erro", "ERRO: {0}" },
                 { "erro_titulo", "Erro" },
                 { "permissao", "Sem permissão para gravar em {0}. Tente executar o instalador como administrador." },
@@ -105,7 +106,8 @@ namespace GoW3Costumes
                 { "pronto", "Done! Costumes installed in mod \"{0}\":" },
                 { "pronto2", "Open SpartanPort, Mods tab, and make sure mod \"{0}\" is enabled. In game: Extras menu > Costume selection." },
                 { "removido_tudo", "All costumes were removed (mod \"{0}\" deleted)." },
-                { "ps4_ok", "PS4 files built in:\n{0}\n\nCopy the EXEC folder to the PS4 with a file redirector (e.g. GoldHEN AFR plugin: /data/GoldHEN/AFR/<game ID>/EXEC/)." },
+                { "ps4_ok", "PS4 files built in:\n{0}\n\nCopy the EXEC folder to the PS4 with a file redirector (e.g. GoldHEN AFR plugin: /data/GoldHEN/AFR/<game ID>/EXEC/). If there is a GoldHEN folder next to it, add its patch to the GoldHEN patches (/data/GoldHEN/patches/xml/CUSA01623.xml) and enable it." },
+                { "patch", "Costume code patch: {0}" },
                 { "erro", "ERROR: {0}" },
                 { "erro_titulo", "Error" },
                 { "permissao", "No permission to write to {0}. Try running the installer as administrator." },
@@ -260,11 +262,14 @@ namespace GoW3Costumes
         }
 
         // grava em <saida>\EXEC\... os arquivos dos visuais ids; devolve as linhas de resumo e os arquivos
-        public List<string> Montar(List<string> idsEnt, string jogo, string saida, List<string> arquivos)
+        // tipoPatch: "spartanport" (patches/<id>.xml do mod) ou "goldhen" (GoldHEN/<id>.xml, PS4)
+        public List<string> Montar(List<string> idsEnt, string jogo, string saida, List<string> arquivos, string tipoPatch)
         {
             List<string> ids = P.Ordenar(idsEnt);
             string exec = Path.Combine(saida, "EXEC");
             if (Directory.Exists(exec)) Directory.Delete(exec, true);
+            string dirPatch = Path.Combine(saida, tipoPatch == "goldhen" ? "GoldHEN" : "patches");
+            if (Directory.Exists(dirPatch)) Directory.Delete(dirPatch, true);
             List<string> resumo = new List<string>();
             List<string> comSlot = new List<string>();
             int idx = Convert.ToInt32(P.Man["primeiro_indice"]);
@@ -288,6 +293,15 @@ namespace GoW3Costumes
                 }
                 if (temSlot)
                 {
+                    // patch de código do traje (ex.: lâminas douradas só com a Odisseia Sombria), com o slot preenchido
+                    Dictionary<string, object> pats = c.ContainsKey("patches") ? c["patches"] as Dictionary<string, object> : null;
+                    if (pats != null && pats.ContainsKey(tipoPatch))
+                    {
+                        Directory.CreateDirectory(dirPatch);
+                        string xml = pats[tipoPatch].ToString().Replace("{INDICE}", idx.ToString("x2"));
+                        File.WriteAllText(Path.Combine(dirPatch, id + ".xml"), xml, new UTF8Encoding(false));
+                        Log(Txt.F("patch", id));
+                    }
                     resumo.Add(Txt.F("slot", Pacote.Nome(c), string.Format("R_HERO{0:D2}", idx)));
                     comSlot.Add(id);
                     idx++;
@@ -404,7 +418,7 @@ namespace GoW3Costumes
             }
             Directory.CreateDirectory(pasta);
             List<string> arquivos = new List<string>();
-            List<string> resumo = Montar(ids, jogo, pasta, arquivos);
+            List<string> resumo = Montar(ids, jogo, pasta, arquivos, "spartanport");
             JavaScriptSerializer js = new JavaScriptSerializer();
             Dictionary<string, object> mj = new Dictionary<string, object>();
             mj["name"] = "GoW III Costumes";
@@ -668,7 +682,7 @@ namespace GoW3Costumes
             Executar(() =>
             {
                 Directory.CreateDirectory(saida);
-                List<string> resumo = NovoMotor().Montar(ids, g, saida, new List<string>());
+                List<string> resumo = NovoMotor().Montar(ids, g, saida, new List<string>(), "goldhen");
                 return Txt.F("ps4_ok", Path.Combine(saida, "EXEC")) + "\n\n  " + string.Join("\n  ", resumo.ToArray());
             });
         }
@@ -715,7 +729,7 @@ namespace GoW3Costumes
                 string acao = A("acao") ?? "";
                 if (acao == "ps4")
                 {
-                    List<string> r = m.Montar(ids, A("jogo"), A("saida"), new List<string>());
+                    List<string> r = m.Montar(ids, A("jogo"), A("saida"), new List<string>(), "goldhen");
                     foreach (string l in r) Console.WriteLine(l);
                     return 0;
                 }

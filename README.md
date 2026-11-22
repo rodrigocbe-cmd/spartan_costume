@@ -23,8 +23,8 @@ O traje do GoW II, com as cores atuais do GoW Ragnarok, feito sobre o Kratos pad
 - Armadura em preto e dourado, seguindo o desenho do GoW II: saia preta com grega dourada,
   ombreira, cinto, braçadeiras, grevas e botas de Hermes douradas.
 - Lâminas de Atena e do Exílio douradas com cabo preto, com fogo, faíscas e rastros dos golpes
-  dourados. O jogo usa as mesmas lâminas para todos os trajes, então com a Odisseia Sombria
-  instalada elas ficam douradas em qualquer traje.
+  dourados — **só com a Odisseia Sombria**: os outros trajes continuam com as lâminas originais
+  (um patch que vem com o mod faz o jogo carregar as lâminas douradas só com esse traje).
 - Bônus, como no GoW II: **ataque 2x, dano sofrido 2x, orbes vermelhas 4x**. Os troféus ficam
   desabilitados ao usar o traje, como nos trajes do próprio jogo.
 - Nome e descrição no menu de trajes nos **16 idiomas do jogo**, seguindo as frases dos trajes
@@ -109,7 +109,7 @@ Fluxo de build (Python 3 com Pillow, NumPy e SciPy; o instalador é compilado co
 ```
 python -I ferramentas/extrair_texturas.py original/wad/R_HERO00.WAD original/R_HERO00
 python -I costumes/dark_odyssey/recolorir.py
-python -I ferramentas/build.py        # -> GoW3_Costumes_v<versão>.zip
+python -I ferramentas/build.py        # -> dist/GoW3_Costumes_v<versão>.zip
 ```
 
 Os detalhes técnicos descobertos (formato WAD, malhas, esqueleto, lista de trajes, bônus, imagens do

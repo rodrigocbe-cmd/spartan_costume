@@ -128,32 +128,36 @@
   {
    "base": "R_W_EXPLOSIVE0.WAD",
    "texturas": "R_W_EXPLOSIVE0",
-   "destino": "R_W_EXPLOSIVE0.WAD"
+   "destino": "R_W_GOLDBLADE0.WAD"
   },
   {
    "base": "R_W_EXPLOSIVE1.WAD",
    "texturas": "R_W_EXPLOSIVE1",
-   "destino": "R_W_EXPLOSIVE1.WAD"
+   "destino": "R_W_GOLDBLADE1.WAD"
   },
   {
    "base": "R_W_EXPLOSIVE2.WAD",
    "texturas": "R_W_EXPLOSIVE2",
-   "destino": "R_W_EXPLOSIVE2.WAD"
+   "destino": "R_W_GOLDBLADE2.WAD"
   },
   {
    "base": "R_W_EXPLOSIVE3.WAD",
    "texturas": "R_W_EXPLOSIVE3",
-   "destino": "R_W_EXPLOSIVE3.WAD"
+   "destino": "R_W_GOLDBLADE3.WAD"
   },
   {
    "base": "R_W_EXPLOSIVE4.WAD",
    "texturas": "R_W_EXPLOSIVE4",
-   "destino": "R_W_EXPLOSIVE4.WAD"
+   "destino": "R_W_GOLDBLADE4.WAD"
   },
   {
    "base": "R_W_EXPLOSIVE5.WAD",
    "texturas": "R_W_EXPLOSIVE5",
-   "destino": "R_W_EXPLOSIVE5.WAD"
+   "destino": "R_W_GOLDBLADE5.WAD"
   }
- ]
+ ],
+ "patches": {
+  "spartanport": "patches/spartanport.xml",
+  "goldhen": "patches/goldhen.xml"
+ }
 }

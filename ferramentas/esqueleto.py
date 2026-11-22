@@ -43,3 +43,31 @@ def aplicar(M, pts):
     pts = np.asarray(pts, dtype=np.float64)
     h = np.c_[pts, np.ones(len(pts))]
     return (h @ M)[:, :3]
+
+
+def _offsets(b):
+    n = struct.unpack_from('<I', b, 4)[0]
+    i = b.find(b'hero\x00')
+    p = i + n * 56
+    while p < len(b) - 12:
+        a, c, off = struct.unpack_from('<3I', b, p)
+        if a == n and c == n and p < off < len(b):
+            break
+        p += 4
+    loc = off + 16
+    inv = loc + n * 64 + 16          # 2ª tabela (poses de ligação inversas, mundo^-1), 16 B de cabeçalho
+    return n, i, loc, inv
+
+
+def copiar_juntas(dest, origem, juntas):
+    """Copia nome, matriz local e pose de ligação inversa das `juntas` do esqueleto `origem` para
+    `dest` (mesmo layout/hierarquia; ex.: ossos de saia de outro traje). Devolve bytes."""
+    d = bytearray(dest)
+    n, i, loc, inv = _offsets(dest)
+    n2, i2, loc2, inv2 = _offsets(origem)
+    assert (n, i, loc, inv) == (n2, i2, loc2, inv2), 'layouts diferentes'
+    assert dest[0x14:0x14 + n * 8] == origem[0x14:0x14 + n * 8], 'hierarquias diferentes'
+    for j in juntas:
+        for base, tam in ((i, 56), (loc, 64), (inv, 64)):
+            d[base + j * tam:base + (j + 1) * tam] = origem[base + j * tam:base + (j + 1) * tam]
+    return bytes(d)

@@ -1,22 +1,23 @@
 """Gera o pacote de distribuição com todos os visuais (trajes em slots novos).
 
-uso: python -I ferramentas/build.py [id1 id2 ...]     (padrão: TRAJES, nessa ordem)
+uso: python -I ferramentas/build.py [--teste] [id1 id2 ...]     (padrão: TRAJES, nessa ordem)
 
 Para cada traje: monta seus WADs (texturas + pos_wad.py, ver trajes.py) e grava um DELTA
 (delta.py: "copiar do arquivo original do usuário" + bytes novos) — o pacote não leva arquivos
 do jogo. Para cada combinação de trajes instalados, grava os deltas dos arquivos compartilhados
 (R_PERM, R_LANG_*, COSTUMEIMAGES). O instalador escolhe a combinação e aplica os deltas.
-Saída: build/dist/GoW3 Costumes/ (instalador .exe) e GoW3_Costumes_v<versão>.zip na raiz do projeto.
+Saída: build/dist/GoW3 Costumes/ (instalador .exe) e dist/GoW3_Costumes_v<versão>.zip.
 """
 import hashlib, itertools, json, os, shutil, sys, zipfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import delta, trajes
 
 RAIZ = trajes.RAIZ
-VERSAO = '1.0.0'
+VERSAO = '1.1.0'
 PASTA_DIST = 'GoW3 Costumes'
-TRAJES = ['dark_odyssey']   # ordem do pacote = ordem dos slots (9, 10, ...)
-# (god_armor fica fora da v1.0.0 — em desenvolvimento; testar com: build.py dark_odyssey god_armor)
+TESTE = False
+TRAJES = ['dark_odyssey', 'general_kratos', 'general_kratos_armadura']   # ordem do pacote = ordem dos slots (9, 10, ...)
+# (god_armor PAUSADO — deixava o jogo lento quando selecionado; testar com: build.py dark_odyssey god_armor)
 
 
 def sha(b):
@@ -96,7 +97,7 @@ def main(ids):
         prev = os.path.join(m['_dir'], 'preview.png')
         if os.path.exists(prev):
             shutil.copy(prev, os.path.join(ddir, 'preview_%s.png' % cid))
-        lista.append(dict(id=cid, slot=m['slot'], nomes=m['nomes'], descricao=m['descricao'], autor=m.get('autor', ''),
+        lista.append(dict(id=cid, slot=m['slot'], patches=trajes.patches(cid), nomes=m['nomes'], descricao=m['descricao'], autor=m.get('autor', ''),
                           preview=('preview_%s.png' % cid) if os.path.exists(prev) else '', arquivos=arqs))
 
     comp = {}
@@ -114,11 +115,12 @@ def main(ids):
     shutil.rmtree(ddir)                                   # dados vão embutidos no .exe
     shutil.copy(os.path.join(RAIZ, 'instalador', 'LEIA-ME.txt'), dist)
 
-    zp = os.path.join(RAIZ, f'{PASTA_DIST} v{VERSAO}.zip'.replace(' ', '_'))     # distribuição na raiz do projeto
-    for pasta in (RAIZ, os.path.join(RAIZ, 'build')):
-        for velho in os.listdir(pasta):
-            if velho.startswith('GoW3_Costumes_v') and velho.endswith('.zip'):
-                os.remove(os.path.join(pasta, velho))
+    # release: dist/ (guarda o histórico; nunca apaga versões); teste (--teste): build/teste/
+    destino = os.path.join(RAIZ, 'build', 'teste') if TESTE else os.path.join(RAIZ, 'dist')
+    os.makedirs(destino, exist_ok=True)
+    zp = os.path.join(destino, f'{PASTA_DIST} v{VERSAO}.zip'.replace(' ', '_'))
+    if os.path.exists(zp):
+        os.remove(zp)
     with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for r, _, fs in os.walk(dist):
             for f in fs:
@@ -128,4 +130,5 @@ def main(ids):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:] or TRAJES)
+    TESTE = '--teste' in sys.argv
+    main([a for a in sys.argv[1:] if not a.startswith('--')] or TRAJES)

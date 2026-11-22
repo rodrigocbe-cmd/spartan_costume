@@ -1,12 +1,12 @@
 {
  "id": "god_armor",
  "nomes": {
-  "pt": "Armadura do Deus da Guerra",
-  "en": "God of War Armor"
+  "pt": "Armadura de Deus",
+  "en": "God Armor"
  },
  "descricao": {
-  "pt": "Armadura dourada inspirada no GoW II: ombreiras de carneiro, peitoral, gola de malha, braçadeiras e grevas douradas e tiras de couro na cintura.",
-  "en": "Golden armor inspired by GoW II: ram pauldrons, breastplate, mail collar, golden bracers and greaves and leather strips at the waist."
+  "pt": "A armadura do Kratos no GoW II: peitoral negro com detalhes dourados, ombreiras de carneiro, cota de malha de aço negro nos braços, pernas e pescoço, manoplas de placas douradas, grevas e braçadeiras douradas e tanga de couro com faixas vermelhas.",
+  "en": "Kratos' armor from GoW II: black breastplate with gold trim, ram pauldrons, black steel chain mail on the arms, legs and neck, golden plate gauntlets, golden greaves and bracers and a leather loincloth with red strips."
  },
  "autor": "GoW III Costumes",
  "bonus": [
@@ -21,113 +21,113 @@
  "imagem_menu": "menu/imagem_menu.png",
  "textos_jogo": {
   "BR": [
-   "Armadura do Deus da Guerra",
+   "Armadura de Deus",
    "Provoca o dobro dos danos de ataque.",
    "Inimigos causam metade do dano de ataque.",
    "Todas as orbes têm seu valor quadruplicado.",
    "Os troféus estão desabilitados."
   ],
   "PT": [
-   "Armadura do Deus da Guerra",
+   "Armadura de Deus",
    "Provoca o dobro dos danos de ataque.",
    "Os inimigos provocam metade dos danos de ataque.",
    "Todas as Esferas valem quatro vezes mais.",
    "Os Troféus estão desactivados"
   ],
   "EN": [
-   "God of War Armor",
-   "God of War Armor does double attack damage.",
+   "God Armor",
+   "God Armor does double attack damage.",
    "Enemies do half attack damage.",
    "All Orbs are worth four times their value.",
    "Trophies are disabled."
   ],
   "UK": [
-   "God of War Armour",
-   "Does double attack damage.",
+   "God Armor",
+   "God Armor does double attack damage.",
    "Enemies do half attack damage.",
    "All Orbs are worth four times their value.",
    "Trophies are disabled."
   ],
   "ES": [
-   "Armadura del Dios de la Guerra",
+   "Armadura de Dios",
    "Causa el doble de daño de ataque.",
    "Los enemigos causan la mitad de daño de ataque.",
    "Todos los orbes cuadruplican su valor.",
    "Los trofeos están desactivados."
   ],
   "LA": [
-   "Armadura del Dios de la Guerra",
+   "Armadura de Dios",
    "Causa el doble de daño de ataque.",
    "Los enemigos causan la mitad de daño de ataque.",
    "Todos los orbes cuadriplican su valor.",
    "Los trofeos están desactivados."
   ],
   "FR": [
-   "Armure du dieu de la guerre",
+   "Armure de dieu",
    "Inflige deux fois plus de dégâts.",
    "Les ennemis infligent la moitié des dégâts.",
    "Tous les orbes valent quatre fois plus.",
    "Trophées désactivés."
   ],
   "IT": [
-   "Armatura del Dio della Guerra",
+   "Armatura divina",
    "Infligge il doppio dei danni.",
    "I nemici infliggono la metà dei danni.",
    "Tutte le Sfere valgono quattro volte tanto.",
    "I trofei sono disabilitati."
   ],
   "DE": [
-   "Rüstung des Kriegsgottes",
+   "Götterrüstung",
    "Fügt doppelten Angriffsschaden zu.",
    "Gegner fügen halben Angriffsschaden zu.",
    "Alle Orbs haben vierfachen Wert.",
    "Trophäen sind deaktiviert."
   ],
   "NL": [
-   "Pantser van de oorlogsgod",
+   "Godenharnas",
    "Richt dubbel zoveel schade aan.",
    "Vijanden richten de helft aanvalsschade aan.",
    "Alle bollen zijn vier keer zoveel waard.",
    "Trofeeën uitgeschakeld."
   ],
   "PL": [
-   "Zbroja Boga Wojny",
-   "Zbroja Boga Wojny zadaje podwójne obrażenia.",
+   "Zbroja boga",
+   "Zbroja boga zadaje podwójne obrażenia.",
    "Przeciwnicy zadają połowę obrażeń.",
    "Wszystkie kule są warte cztery razy więcej.",
    "Trofea są niedostępne."
   ],
   "TR": [
-   "Savaş Tanrısı Zırhı",
+   "Tanrı Zırhı",
    "Normalin iki katı fazla saldırı hasarı verir.",
    "Düşmanlar normalin yarısı kadar saldırı hasarı verir.",
    "Bütün Küreler normalin dört katı daha değerlidir.",
    "Kupalar devre dışı."
   ],
   "RU": [
-   "Доспехи Бога войны",
-   "Доспехи Бога войны наносят двойной урон.",
+   "Доспехи бога",
+   "Доспехи бога наносят двойной урон.",
    "Противники наносят половинный урон.",
    "Все сферы ценятся в четыре раза выше.",
    "Призы недоступны."
   ],
   "JA": [
-   "ゴッド・オブ・ウォーの鎧",
+   "神の鎧",
    "攻撃力が二倍になる",
    "敵の攻撃力は半減する",
    "オーブすべて四倍の価値になる",
    "トロフィーは無効になった"
   ],
   "KO": [
-   "전쟁의 신 갑옷",
+   "신의 갑옷",
    "공격력이 2배",
    "적의 공격력은 1/2",
    "모든 오브가 4배의 가치",
    "트로피 획득 불가"
   ],
   "ZH": [
-   "戰神盔甲",
-   "戰神盔甲攻擊力加倍，",
+   "神之盔甲",
+   "神之盔甲攻擊力加倍，",
    "且敵人攻擊力減半。",
    "所有寶珠皆價值暴增為四倍。",
    "獎盃全部無效。"

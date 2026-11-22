@@ -1,0 +1,115 @@
+{
+ "id": "general_kratos_armadura",
+ "nomes": {
+  "pt": "General Kratos (armadura)",
+  "en": "General Kratos (Armor)"
+ },
+ "descricao": {
+  "pt": "O General Kratos com a armadura Dominus, como aparece nas cenas do GoW I: traje Dominus do jogo com o tom de pele normal do General. Bônus do GoW II: metade do dano causado, dobro do dano sofrido.",
+  "en": "General Kratos in the Dominus armor, as seen in the GoW I cutscenes: the game's Dominus costume with the General's natural skin tone. GoW II bonus: half damage dealt, double damage taken."
+ },
+ "autor": "GoW III Costumes",
+ "bonus": [
+  0.5,
+  2,
+  1,
+  1,
+  1,
+  1,
+  0
+ ],
+ "imagem_menu": "menu/imagem_menu.png",
+ "textos_jogo": {
+  "BR": [
+   "General Kratos (armadura)",
+   "General Kratos causa metade dos danos de ataque.",
+   "Inimigos causam o dobro do dano de ataque.",
+   "Os troféus estão desabilitados."
+  ],
+  "PT": [
+   "General Kratos (armadura)",
+   "Provoca metade dos danos de ataque.",
+   "Os inimigos provocam o dobro dos danos de ataque.",
+   "Os Troféus estão desactivados"
+  ],
+  "EN": [
+   "General Kratos (Armor)",
+   "General Kratos does half attack damage.",
+   "Enemies do double attack damage.",
+   "Trophies are disabled."
+  ],
+  "ES": [
+   "General Kratos (armadura)",
+   "General Kratos causa la mitad de daño de ataque.",
+   "Los enemigos causan el doble de daño de ataque.",
+   "Los trofeos están desactivados."
+  ],
+  "FR": [
+   "Général Kratos (armure)",
+   "Inflige la moitié des dégâts.",
+   "Les ennemis infligent le double de dégâts.",
+   "Trophées désactivés."
+  ],
+  "IT": [
+   "Generale Kratos (armatura)",
+   "Il Generale Kratos infligge la metà dei danni.",
+   "I nemici infliggono il doppio dei danni.",
+   "I trofei sono disabilitati."
+  ],
+  "DE": [
+   "General Kratos (Rüstung)",
+   "General Kratos fügt halben Angriffsschaden zu.",
+   "Gegner fügen doppelten Angriffsschaden zu.",
+   "Trophäen sind deaktiviert."
+  ],
+  "NL": [
+   "Generaal Kratos (harnas)",
+   "Richt de helft aanvalsschade aan.",
+   "Vijanden richten dubbel zoveel schade aan.",
+   "Trofeeën uitgeschakeld."
+  ],
+  "PL": [
+   "Generał Kratos (zbroja)",
+   "Generał Kratos zadaje połowę obrażeń.",
+   "Przeciwnicy zadają podwójne obrażenia.",
+   "Trofea są niedostępne."
+  ],
+  "TR": [
+   "General Kratos (zırh)",
+   "Normalin yarısı kadar saldırı hasarı verir.",
+   "Düşmanlar iki katı fazla saldırı hasarı verir.",
+   "Kupalar devre dışı."
+  ],
+  "RU": [
+   "Генерал Кратос (доспехи)",
+   "Генерал Кратос наносит половинный урон.",
+   "Противники наносят двойной урон.",
+   "Призы недоступны."
+  ],
+  "JA": [
+   "将軍クレイトス（鎧）",
+   "攻撃力が半減する",
+   "敵の攻撃力も二倍になる",
+   "トロフィーは無効になった"
+  ],
+  "KO": [
+   "장군 크레토스 (갑옷)",
+   "공격력이 1/2",
+   "적의 공격력도 2배",
+   "트로피 획득 불가"
+  ],
+  "ZH": [
+   "克雷多斯將軍（盔甲）",
+   "攻擊力會減半，",
+   "且敵人攻擊力亦加倍。",
+   "獎盃全部無效。"
+  ]
+ },
+ "wads": [
+  {
+   "base": "R_HERO06.WAD",
+   "texturas": "R_HERO06",
+   "destino": "slot"
+  }
+ ]
+}

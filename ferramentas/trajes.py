@@ -73,6 +73,16 @@ def arquivos_traje(cid):
     return out
 
 
+def patches(cid, indice=None):
+    """Patches de código do traje: {'spartanport': xml, 'goldhen': xml}; com indice, {INDICE} preenchido."""
+    m = meta(cid)
+    out = {}
+    for tipo, rel in m.get('patches', {}).items():
+        x = open(os.path.join(m['_dir'], rel), encoding='utf-8').read()
+        out[tipo] = x if indice is None else x.replace('{INDICE}', '%02x' % indice)
+    return out
+
+
 def destino(d, indice):
     return W + ('R_HERO%02d.WAD' % indice if d == 'slot' else d)
 

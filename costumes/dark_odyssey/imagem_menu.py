@@ -1,74 +1,145 @@
 """Imagem do menu de trajes (256x512, DXT5 com alfa) da Odisseia Sombria.
 
-Parte da imagem oficial do Kratos padrão (COSTUMEIMAGES.WAD → TXAEF04C75, gocostume0),
-que já tem a pose/iluminação das outras imagens, e recolore por cor + região.
+Parte da imagem OFICIAL do Kratos padrão (COSTUMEIMAGES.WAD → TXAEF04C75, gocostume0) — mesma pose,
+posição e iluminação das outras imagens do menu — e repinta cada parte com as cores das texturas do traje
+(paleta de recolorir.py): pele cinza-carvão, tatuagem dourada, saia preta com grega dourada, ombreira,
+cinto, braçadeiras, grevas e lâminas douradas.
+
+As partes vêm de `mascaras_kratos` (polígonos na imagem + cor), também usadas pelo General Kratos.
 
 uso: python -I costumes/dark_odyssey/imagem_menu.py
 Gera: costumes/dark_odyssey/menu/imagem_menu.png (+ preview_menu.png)
 """
 import os
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
+from scipy import ndimage
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import recolorir as R
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-ORIG = os.path.join(R.RAIZ, 'original', 'COSTUMEIMAGES', 'png', 'TXAEF04C75.F52173F8.png')
+PNG_MENU = os.path.join(R.RAIZ, 'original', 'COSTUMEIMAGES', 'png')
+ORIG = os.path.join(PNG_MENU, 'TXAEF04C75.F52173F8.png')        # gocostume0 (Kratos padrão)
 SAIDA = os.path.join(AQUI, 'menu')
 
+# partes da imagem do Kratos padrão (pixels da imagem 256x512)
+POLIGONOS_KRATOS = {
+    'ombreira': [(84, 127), (98, 123), (115, 127), (108, 140), (101, 156), (98, 182), (97, 212), (64, 214),
+                 (69, 198), (77, 180), (80, 160), (83, 145)],
+    'cinto': [(98, 206), (166, 203), (168, 229), (99, 231)],
+    'saia': [(98, 229), (134, 229), (136, 250), (130, 262), (128, 300), (102, 304), (94, 272)],
+    'saia_tras': [(134, 229), (170, 228), (176, 250), (168, 262), (150, 254), (136, 252)],
+    'bracadeira_dir': [(168, 208), (201, 210), (203, 250), (196, 292), (176, 292), (170, 250)],
+    'bracadeira_esq': [(66, 212), (97, 212), (95, 236), (86, 254), (70, 254), (64, 236)],
+    'lamina_esq': [(50, 222), (64, 216), (82, 248), (80, 292), (58, 294), (48, 262)],
+    'lamina_dir': [(128, 262), (137, 262), (140, 280), (168, 279), (171, 300), (162, 322), (142, 320), (131, 300)],
+    'bota_esq': [(74, 318), (112, 318), (110, 392), (52, 394), (52, 374), (76, 360)],
+    'bota_dir': [(146, 332), (182, 330), (192, 402), (190, 442), (156, 442), (158, 400), (150, 350)],
+}
 
-def main():
-    im = np.asarray(Image.open(ORIG).convert('RGBA')).astype(np.float32) / 255
-    rgb, a = im[..., :3], im[..., 3:]
-    H, W = rgb.shape[:2]
+
+def poligono(shape, pts, sigma=0.7):
+    m = Image.new('L', (shape[1], shape[0]), 0)
+    ImageDraw.Draw(m).polygon(pts, fill=255)
+    return ndimage.gaussian_filter(np.asarray(m).astype(np.float32) / 255, sigma)
+
+
+def carregar(caminho):
+    im = np.asarray(Image.open(caminho).convert('RGBA')).astype(np.float32) / 255
+    return im[..., :3], im[..., 3]
+
+
+def pele_e_tatuagem(rgb, a, fora=None):
+    """Pele = tons pouco saturados e quentes (a imagem é escura e avermelhada); tatuagem = pele com r/g bem
+    acima da pele em volta. `fora` = máscara do que não pode ser pele (peças)."""
     h, s, v = R.hsv(rgb)
     L = R.lum(rgb)
-    yy, xx = np.mgrid[0:H, 0:W] / np.array([H, W])[:, None, None]
+    quente = ((h < 0.11) | (h > 0.90)).astype(np.float32)
+    corpo = R.suave(a, 0.75, 0.95)
+    fora = np.zeros_like(a) if fora is None else fora
+    pele = (1 - R.suave(s, 0.40, 0.50)) * R.suave(L, 0.015, 0.04) * quente * corpo * (1 - fora)
+    # zona da pele = pele com os buracos fechados (a tatuagem é um "buraco" saturado dentro dela)
+    zona = ndimage.binary_closing(pele > 0.5, iterations=7)
+    zona = ndimage.binary_fill_holes(zona) & (fora < 0.5) & (corpo > 0.5)
+    vermelho = ((h < 0.06) | (h > 0.92)).astype(np.float32)
+    tat = zona * vermelho * R.suave(s, 0.40, 0.50) * R.suave(L, 0.008, 0.03)
+    tat = ndimage.gaussian_filter(ndimage.median_filter(tat, 3), 0.6)
+    pele = np.maximum(pele, zona * (1 - tat))
+    return np.clip(pele, 0, 1), np.clip(tat, 0, 1)
 
-    from scipy import ndimage
-    corpo = R.suave(a[..., 0], 0.45, 0.85)                                 # ignora sombra/halo
-    def regiao(boxes, sigma=2.0):
-        return ndimage.gaussian_filter(R.caixa(rgb.shape, boxes), sigma) * corpo
 
-    vermelho = ((h < 0.05) | (h > 0.93)).astype(np.float32)
-    amarelo = ((h >= 0.06) & (h < 0.17)).astype(np.float32)
-    pele = (1 - R.suave(s, 0.30, 0.42)) * R.suave(v, 0.28, 0.45) * corpo   # cinza/rosado claro
-    tat = vermelho * R.suave(s, 0.42, 0.55) * (1 - R.suave(L, 0.40, 0.55)) * regiao([(0.0, 0.0, 1.0, 0.415)], 1.0)
-    ombro = regiao([(0.15, 0.22, 0.42, 0.42)]) * amarelo * R.suave(s, 0.3, 0.5)
-    braceletes = regiao([(0.26, 0.38, 0.42, 0.47), (0.64, 0.40, 0.82, 0.56)])
-    lamina_esq = regiao([(0.18, 0.43, 0.33, 0.58)])
-    lamina_dir = regiao([(0.50, 0.48, 0.68, 0.65)]) * np.maximum(vermelho * R.suave(s, 0.3, 0.5), 1 - R.suave(L, 0.15, 0.3))
-    lamina = np.maximum(lamina_esq, lamina_dir)
-    saia = regiao([(0.36, 0.44, 0.58, 0.64)]) * (1 - lamina)
-    cinto = regiao([(0.38, 0.40, 0.66, 0.445)], 1.0)
-    grevas = regiao([(0.0, 0.62, 1.0, 1.0)]) * R.suave(s, 0.2, 0.4)
-
-    out = rgb.copy()
-    ref_pele = np.median(L[(pele > 0.8)])
-    out = mistura(out, R.tingir(L, R.PELE * 1.25, ref_pele, 1.2), pele * (1 - tat))
-    out = mistura(out, R.tingir(0.5 * L + 0.5 * 0.4, R.TATUAGEM, 0.4, 1.0), tat)
-    out = mistura(out, R.tingir(L, R.OURO * 1.1, 0.55, 1.0), ombro)
-    out = mistura(out, R.tingir(L, R.PRETO * 1.4, 0.25, 1.0), braceletes * (1 - pele) * (1 - lamina))
-    claro = R.suave(L, 0.20, 0.34)
-    out = mistura(out, R.tingir(L, R.PRETO * 1.3, 0.15, 1.0), saia * (1 - claro) * (1 - pele))
-    out = mistura(out, R.tingir(L, R.OURO, 0.40, 1.0), saia * claro * (1 - pele))
-    out = mistura(out, R.tingir(0.6 * L + 0.4 * 0.3, R.OURO, 0.3, 1.0), np.maximum(cinto, grevas * (1 - pele)))
-    out = mistura(out, R.tingir(0.5 * L + 0.5 * 0.35, R.OURO, 0.35, 1.1), lamina * (1 - pele))
-
-    os.makedirs(SAIDA, exist_ok=True)
-    res = np.concatenate([np.clip(out, 0, 1), a], -1)
-    Image.fromarray((res * 255 + 0.5).astype(np.uint8), 'RGBA').save(os.path.join(SAIDA, 'imagem_menu.png'))
-    # preview sobre o quadro vermelho do menu
-    prev = Image.new('RGBA', (W * 2 + 8, H), (120, 10, 10, 255))
-    o = Image.open(ORIG).convert('RGBA')
-    n = Image.open(os.path.join(SAIDA, 'imagem_menu.png'))
-    prev.alpha_composite(o, (0, 0)); prev.alpha_composite(n, (W + 8, 0))
-    prev.resize((prev.width * 2, H * 2)).save(os.path.join(SAIDA, 'preview_menu.png'))
-    print('ok')
+def mascaras_kratos(rgb, a):
+    m = {k: poligono(rgb.shape, p) for k, p in POLIGONOS_KRATOS.items()}
+    pecas = np.clip(sum(m.values()), 0, 1)
+    h, s, v = R.hsv(rgb)
+    # na ombreira só o metal (saturado) é peça; a pele do braço atrás dela fica pele
+    metal_ombro = m['ombreira'] * R.suave(s, 0.42, 0.55)
+    fora = np.clip(pecas - m['ombreira'] + metal_ombro, 0, 1)
+    # nas botas/lâmina da coxa, joelhos e dedos claros e pouco saturados são pele
+    L = R.lum(rgb)
+    claro = R.suave(L, 0.05, 0.10) * (1 - R.suave(s, 0.40, 0.55))
+    for k in ('bota_esq', 'bota_dir', 'lamina_dir'):
+        fora = fora - m[k] * claro
+    fora = np.clip(fora, 0, 1)
+    pele, tat = pele_e_tatuagem(rgb, a, fora)
+    m['metal_ombro'] = metal_ombro
+    m['pele'], m['tatuagem'] = pele, tat
+    return m
 
 
 def mistura(base, nova, m):
     m = np.clip(m, 0, 1)[..., None]
     return base * (1 - m) + nova * m
+
+
+def salvar(rgb, a, destino, orig=ORIG):
+    os.makedirs(destino, exist_ok=True)
+    res = np.concatenate([np.clip(rgb, 0, 1), a[..., None]], -1)
+    Image.fromarray((res * 255 + 0.5).astype(np.uint8), 'RGBA').save(os.path.join(destino, 'imagem_menu.png'))
+    o = Image.open(orig).convert('RGBA')
+    n = Image.open(os.path.join(destino, 'imagem_menu.png'))
+    W, H = o.size
+    prev = Image.new('RGBA', (W * 2 + 8, H), (120, 10, 10, 255))
+    prev.alpha_composite(o, (0, 0)); prev.alpha_composite(n, (W + 8, 0))
+    prev.resize((prev.width * 2, H * 2)).save(os.path.join(destino, 'preview_menu.png'))
+
+
+def main():
+    rgb, a = carregar(ORIG)
+    m = mascaras_kratos(rgb, a)
+    L = R.lum(rgb)
+    opaco = R.suave(a, 0.6, 0.95)          # o halo (sombra) em volta do corpo fica como está
+    ref = float(np.median(L[m['pele'] > 0.8]))
+    out = rgb.copy()
+
+    def peca(mask, cor, brilho, contraste=1.0, base=None):
+        """Tinge mantendo a luz/sombra da imagem (luminância relativa à pele)."""
+        mask = mask * opaco
+        Lb = L if base is None else base
+        r = ref          # mesma escala para todas as peças: escuro continua escuro
+        nova = R.tingir(Lb, cor * brilho, r, contraste)
+        nova = nova / (1 + 0.6 * np.maximum(nova.max(-1, keepdims=True) - 0.6, 0))   # brilhos sem estourar
+        return mistura(out, nova, mask)
+
+    sem_pele = 1 - m['pele']
+    out = peca(m['pele'] * (1 - m['tatuagem']), R.PELE * np.array([1.0, 1.0, 1.04]), 0.9)
+    out = peca(m['tatuagem'], R.TATUAGEM, 1.2, 0.8)
+    out = peca(m['metal_ombro'], R.OURO, 1.0)
+    out = peca(m['cinto'] * sem_pele, R.OURO, 1.6, 0.85)
+    # saia: tecido vermelho -> preto; grega (clara) -> dourada
+    grega = R.suave(L, 0.10, 0.16)
+    for k in ('saia', 'saia_tras'):
+        out = peca(m[k] * (1 - grega), R.PRETO, 4.0, 0.8)
+        out = peca(m[k] * grega, R.OURO, 1.8, 0.8)
+    for k in ('bracadeira_dir', 'bracadeira_esq'):
+        out = peca(m[k] * sem_pele, np.array([0.30, 0.28, 0.25]), 2.4, 0.9)
+    for k in ('lamina_esq', 'lamina_dir'):
+        out = peca(m[k] * sem_pele, R.OURO, 1.6, 0.9)
+    for k in ('bota_esq', 'bota_dir'):
+        out = peca(m[k] * sem_pele, R.OURO, 1.1, 0.9)
+    salvar(out, a, SAIDA)
+    print('ok (pele ref %.3f)' % ref)
 
 
 if __name__ == '__main__':

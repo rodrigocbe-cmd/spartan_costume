@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+    <TitleID>
+        <ID>CUSA01623</ID>
+    </TitleID>
+    <Metadata Title="God of War III Remastered" Name="GoW3 Costumes - Golden blades (Dark Odyssey only)" Note="Golden blades only with the Dark Odyssey costume (slot {INDICE} hex)." Author="GoW III Costumes" PatchVer="1.0" AppVer="01.02" AppElf="eboot.bin">
+        <PatchList>
+            <Line Type="bytes" Address="0x005073c1" Value="833da8b72b00{INDICE}0f8583180000eb41"/>
+            <Line Type="bytes" Address="0x00507411" Value="817f044578706c0f8533180000eb41"/>
+            <Line Type="bytes" Address="0x00507461" Value="c74704476f6c64eb47"/>
+            <Line Type="bytes" Address="0x005074b1" Value="c74708426c6164e994170000"/>
+            <Line Type="bytes" Address="0x00508c51" Value="554889e54157e9daba0e00"/>
+            <Line Type="bytes" Address="0x005f4730" Value="e98c2cf1ff90"/>
+        </PatchList>
+    </Metadata>
+</Patch>

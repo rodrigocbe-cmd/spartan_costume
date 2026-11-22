@@ -118,3 +118,28 @@ if __name__ == '__main__':
               f"sub {[(s['nv'], s['ntri'], hex(s['flags'])) for s in m['subs']]} stride {m['stride']} idx_ok {ok} "
               f"bbox x[{min(xs):.2f},{max(xs):.2f}] y[{min(ys):.2f},{max(ys):.2f}] z[{min(zs):.2f},{max(zs):.2f}]")
         salvar_obj(os.path.join(sys.argv[2], f'malha{k:02d}_g{m["grupo"]:02d}.obj'), pos, uv, idx)
+
+
+def conjuntos(b):
+    """Registros de conjunto de cada grupo (tabela em +0x24 do grupo, nº em +0x10):
+    [{grupo, k, reg (abs), material, flags, streams (abs)}]. O material é o índice na lista de MAT
+    (referências tag 0x0001 antes da referência ao MG no WAD, um bloco por variante)."""
+    out = []
+    for gi, g in enumerate(grupos(b)):
+        n = struct.unpack_from('<H', b, g + 0x10)[0]
+        for k in range(n):
+            p = g + 0x24 + 4 * k
+            R = p + struct.unpack_from('<i', b, p)[0]
+            out.append(dict(grupo=gi, k=k, reg=R, material=struct.unpack_from('<H', b, R + 0x26)[0],
+                            flags=struct.unpack_from('<H', b, R + 0x2c)[0],
+                            streams=R + 0x34 + struct.unpack_from('<i', b, R + 0x34)[0]))
+    return out
+
+
+def ler_com_material(b):
+    """malha.ler + material de cada malha (via conjuntos)."""
+    mat = {c['streams']: c['material'] for c in conjuntos(b)}
+    ms = ler(b)
+    for m in ms:
+        m['material'] = mat.get(m['ents'][0]['pos'], -1)
+    return ms

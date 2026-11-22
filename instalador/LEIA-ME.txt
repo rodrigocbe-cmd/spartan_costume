@@ -1,4 +1,4 @@
-GoW III Costumes 1.0.0 - visuais para God of War III Remastered
+GoW III Costumes 1.1.0 - visuais para God of War III Remastered
 =================================================================
 
 [Português]
@@ -10,8 +10,8 @@ Incluído
     douradas com cabo preto, fogo, faíscas e rastros dourados.
     Bônus (como no GoW II): ataque 2x, dano sofrido 2x, orbes vermelhas 4x.
     Os troféus ficam desabilitados ao usar o traje (como nos trajes do jogo).
-    Obs.: o jogo usa as mesmas lâminas para todos os trajes; com a Odisseia Sombria
-    instalada, as lâminas ficam douradas em qualquer traje.
+    As lâminas douradas aparecem só com a Odisseia Sombria; nos outros trajes as lâminas
+    continuam as originais (no SpartanPort isso usa um patch que vem junto com o mod).
 
 Requisitos
   * Sua própria cópia do jogo (CUSA01623). Este pacote NÃO contém arquivos do jogo: o
@@ -40,6 +40,9 @@ PS4 (GoldHEN)
      salvar. Será criada a pasta "GoW3 Costumes PS4/EXEC/".
   3. Copie a pasta EXEC para o PS4 usando um redirecionador de arquivos, por exemplo o
      plugin AFR do GoldHEN: /data/GoldHEN/AFR/<ID do jogo>/EXEC/
+  4. Lâminas douradas só na Odisseia Sombria: adicione o patch da pasta "GoldHEN" gerada aos
+     patches do GoldHEN (/data/GoldHEN/patches/xml/CUSA01623.xml) e ative-o. Feito para a
+     versão 01.02 do jogo. Sem o patch, as lâminas ficam as originais em todos os trajes.
   Para remover, apague os arquivos copiados.
 
 Idioma
@@ -56,8 +59,8 @@ Included
     fire, sparks and trails.
     Bonus (as in GoW II): 2x attack, 2x damage taken, 4x red orbs.
     Trophies are disabled while using the costume (as with the game's costumes).
-    Note: the game uses the same blades for every costume; with Dark Odyssey installed,
-    the blades are golden in any costume.
+    The golden blades appear only with Dark Odyssey; other costumes keep the original
+    blades (on SpartanPort this uses a patch that comes with the mod).
 
 Requirements
   * Your own copy of the game (CUSA01623). This package contains NO game files: the
@@ -85,6 +88,9 @@ PS4 (GoldHEN)
      where to save. A folder "GoW3 Costumes PS4/EXEC/" is created.
   3. Copy the EXEC folder to the PS4 with a file redirector, e.g. the GoldHEN AFR plugin:
      /data/GoldHEN/AFR/<game ID>/EXEC/
+  4. Golden blades only with Dark Odyssey: add the patch from the generated "GoldHEN" folder to
+     the GoldHEN patches (/data/GoldHEN/patches/xml/CUSA01623.xml) and enable it. Made for game
+     version 01.02. Without the patch, all costumes keep the original blades.
   To remove, delete the copied files.
 
 Language

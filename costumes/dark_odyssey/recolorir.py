@@ -256,7 +256,14 @@ def main():
     for n in TEX_METAL:
         rgb, al = carregar(n)
         L = lum(rgb)
-        salvar(n, tingir(L, OURO, np.median(L[L > 0.2]), 1.0), al)
+        ouro = tingir(L, OURO, np.median(L[L > 0.2]), 1.0)
+        # manchas de SANGUE do Velo ficam vermelhas (pedido do usuário): vermelho saturado = cor original
+        h, s, v = hsv(rgb)
+        verm = 1 - suave(np.minimum(h, 1 - h), 0.045, 0.07)
+        sangue = verm * suave(s, 0.18, 0.34)
+        from scipy import ndimage
+        sangue = ndimage.gaussian_filter(sangue.astype(np.float32), 0.7)[..., None]
+        salvar(n, ouro * (1 - sangue) + rgb * sangue, al)
     # especular do material fleece (ombreira): no jogo a ombreira dourada ficava estourada
     rgb, al = carregar('TX2E5E7D75.DA8083B2')
     salvar('TX2E5E7D75.DA8083B2', rgb * 0.6, al)
